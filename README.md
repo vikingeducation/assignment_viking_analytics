@@ -16,11 +16,9 @@ Flight.find_by_sql("SELECT price FROM flights JOIN airports ON (origin_id = airp
 
 5. Find a list of all Airport names and codes which connect to the airport coded LYT.
 
-Flight.find_by_sql("SELECT * FROM flights JOIN airports ON (origin_id = airports.id) WHERE airports.code = 'LYT'")
-
-Airport.find_by_sql("SELECT a.code, a.long_name, b.code, b.long_name
-FROM flights a JOIN flights b ON (a.origin_id = b.origin_id)
-JOIN airports c ON (a.origin_id = airports.id)
-JOIN airports d ON (b.origin_id = airports.id)
-WHERE c.code = 'LYT' OR d.code = 'LYT'")
+Flight.find_by_sql("SELECT b.code AS o_code, b.long_name AS o_ln,
+                    c.code AS d_code, c.long_name AS d_ln
+                  FROM flights JOIN airports b ON (origin_id = b.id)
+                  JOIN airports c ON (destination_id = c.id)
+                  WHERE b.code = 'LYT' OR c.code = 'LYT'")
 
