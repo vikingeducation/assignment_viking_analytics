@@ -3,6 +3,8 @@
 MULTIPLIER = 10
 
 
+srand(42)
+
 # start and end times
 START_TIME = Time.find_zone("Pacific Time (US & Canada)").local(2011,1,1)
 END_TIME = Time.find_zone("Pacific Time (US & Canada)").local(2014,1,1)
