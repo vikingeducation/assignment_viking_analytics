@@ -75,7 +75,7 @@ end
 
 
 Airline.all.each do |airline|
-  MULTIPLIER.times do
+  (MULTIPLIER * 100).times do
     origin_id, destination_id = Airport.pluck(:id).sample(2)
     departure_time = random_time
     Flight.create(origin_id: origin_id,
@@ -83,7 +83,8 @@ Airline.all.each do |airline|
                   departure_time: departure_time,
                   airline_id: Airline.pluck(:id).sample,
                   arrival_time: random_hours_later(departure_time),
-                  price: rand(99.99..850.00).round(2) )
+                  price: rand(99.99..850.00).round(2),
+                  distance: rand(100..600))
   end
 end
 
