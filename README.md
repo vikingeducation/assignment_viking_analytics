@@ -34,9 +34,27 @@ JOIN itineraries ON (tickets.itinerary_id = itineraries.id) \
 JOIN users ON (itineraries.user_id = users.id) \
 WHERE users.first_name = 'Dannie' AND users.last_name = \"D'Amore\" ")
 
+AGGREGATION
+1.Find the top 5 most expensive flights that end in California.
 
+Flight.find_by_sql("SELECT price \
+FROM flights JOIN airports \
+ON (flights.destination_id = airports.id) \
+JOIN states ON (airports.state_id = states.id) \
+WHERE states.name = 'California'  \
+ORDER BY flights.price DESC \
+LIMIT 5")
 
+2. Find the shortest flight that username "ryann_anderson" took.
 
+Flight.find_by_sql("SELECT *
+FROM flights JOIN tickets ON (tickets.flight_id = flights.id) \
+JOIN itineraries ON (tickets.itinerary_id = itineraries.id) \
+JOIN users ON (itineraries.user_id = users.id) \
+WHERE users.username = 'ryann_anderson' \
+ORDER BY flights.distance")
+
+--
 
 
 
