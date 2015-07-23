@@ -22,3 +22,25 @@ Flight.find_by_sql("SELECT b.code AS o_code, b.long_name AS o_ln,
                   JOIN airports c ON (destination_id = c.id)
                   WHERE b.code = 'LYT' OR c.code = 'LYT'")
 
+
+6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2015. (Hint, see if you can get a list of all ticket IDs first).
+
+
+Airport.find_by_sql("SELECT DISTINCT long_name \
+FROM airports JOIN flights a ON(airports.id = a.destination_id) \
+JOIN flights b ON (airports.id = b.origin_id) \
+JOIN tickets ON (flight_id = b.id) \
+JOIN itineraries ON (tickets.itinerary_id = itineraries.id) \
+JOIN users ON (itineraries.user_id = users.id) \
+WHERE users.first_name = 'Dannie' AND users.last_name = \"D'Amore\" ")
+
+
+
+
+
+
+
+
+
+
+
