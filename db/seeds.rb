@@ -1,6 +1,6 @@
 
 # increase your seed size by changing this
-MULTIPLIER = 10
+MULTIPLIER = 1
 
 
 srand(42)
