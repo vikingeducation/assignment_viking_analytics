@@ -2,7 +2,7 @@
 
 ## Bideo Wego
 
-The answers to the assignment are shown below and available as SQL files in `/sql`.
+The answers to the assignment are shown below and available as SQL files in `/sql` [here](https://github.com/BideoWego/assignment_viking_airlines/tree/master/sql).
 
 # Warmups
 
