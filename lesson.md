@@ -124,8 +124,64 @@ Here are some queries we'd like you to answer using this ActiveRecord database. 
   FROM Flights
   ```
 
+### Advanced
+1. Find the most popular travel destination for users who live in Kansas.
+  ```
+  SELECT States.name, COUNT(*) AS num_flights_arriving
+  FROM Flights JOIN Airports ON Flights.destination_id = Airports.id
+       JOIN States ON Airports.state_id = States.id
+  WHERE Airports.id IN (
+          SELECT Flights.destination_id
+          FROM Users JOIN Itineraries ON Users.id = Itineraries.user_id
+                     JOIN Tickets ON Itineraries.id = Tickets.itinerary_id
+                     JOIN Flights ON Tickets.flight_id = Flights.id
+          WHERE Users.state_id = (SELECT States.id FROM States WHERE States.name = 'Nebraska'))
+  GROUP BY States.name
+  ORDER BY num_flights_arriving DESC
+  LIMIT 1
+  ```
 
+2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+  ```
+  Can't figure this one out
+  ```
 
-### Wrapping Up
+3. Find the cheapest flight that was taken by a user who only had one itinerary.
+  ```
+  SELECT MIN(Flights.price) AS cheapest_ticket
+  FROM Users JOIN Itineraries ON Users.id = Itineraries.user_id
+             JOIN Tickets ON Itineraries.id = Tickets.itinerary_id
+             JOIN Flights ON Tickets.flight_id = Flights.id
+  WHERE Users.id IN (SELECT Users.id
+                     FROM Users JOIN Itineraries ON Users.id = Itineraries.user_id
+                                JOIN Tickets ON Itineraries.id = Tickets.itinerary_id
+                                JOIN Flights ON Tickets.flight_id = Flights.id
+                     GROUP BY Users.id
+                     HAVING COUNT(*) = 1)
+  ```
+
+4. Find the average cost of a flight itinerary for users in each state in 2012.
+  ```
+  SELECT States.name, ROUND(AVG(Flights.price)::numeric,2) AS avg_price
+  FROM Users JOIN Itineraries ON Users.id = Itineraries.user_id
+             JOIN States ON Users.state_id = States.id
+             JOIN Tickets ON Itineraries.id = Tickets.itinerary_id
+             JOIN Flights ON Tickets.flight_id = Flights.id
+  WHERE Flights.departure_time >= '2012-01-01' AND Flights.departure_time < '2013-01-01'
+  GROUP BY States.name
+  ORDER BY States.name
+  ```
+
+5. Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance.
+  ```
+  /* This is as far as I got, all the flights into those states during that time period, less than 400 miles distance */
+  SELECT Flights.id as Flight_id, States.name as Dest_State, Flights.distance, Flights.departure_time, Flights.price
+  FROM Flights JOIN Airports ON Flights.destination_id = Airports.id
+               JOIN States ON Airports.state_id = States.id
+  WHERE Flights.departure_time >= DATE '2013-05-06' AND Flights.departure_time < DATE '2013-05-06' + INTERVAL '6 weeks' AND
+  Flights.distance < 400 AND Flights.destination_id IN (SELECT Airports.id 
+                                                        FROM Airports JOIN States ON Airports.state_id = States.id
+                                                        WHERE States.name IN ('Oregon', 'Pennsylvania', 'Arkansas'))
+  ```                                                      
 
 
