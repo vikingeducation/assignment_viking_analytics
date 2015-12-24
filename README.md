@@ -183,9 +183,29 @@ All flights second leg:
 SELECT f.id, f.price, f.arrival_time, 1 FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Arkansas') AND f.departure_time > '2011-05-06' AND f.departure_time < '2011-06-17' AND f.distance <= 400;
 ```
 
-All physically possible combinations, ignoring start date, end date, and distance requirements so that I actually have data left:
+Final Query, ignoring start date, end date, and distance requirements so that I actually have data left:
 ```
-SELECT *, (leg1.price + leg2.price) as total_price FROM (SELECT f.id, f.price, f.arrival_time, 1 as match FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Oregon') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania')) leg1 JOIN (SELECT f.id, f.price, f.departure_time, 1 as match FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Arkansas')) leg2 ON leg1.match = leg2.match WHERE leg1.arrival_time < leg2.departure_time;
+SELECT *, (leg1.price + leg2.price) as total_price
+FROM (
+  SELECT f.id, f.price, f.arrival_time, 1 as match
+  FROM flights f
+  WHERE f.origin_id IN (
+      SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Oregon')
+    AND f.destination_id IN (
+      SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania')) leg1
+  JOIN (
+    SELECT f.id, f.price, f.departure_time, 1 as match
+    FROM flights f
+    WHERE f.origin_id IN (
+        SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id
+        WHERE s.name = 'Pennsylvania')
+      AND f.destination_id IN (
+        SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id
+        WHERE s.name = 'Arkansas')) leg2
+    ON leg1.match = leg2.match
+WHERE leg1.arrival_time < leg2.departure_time
+ORDER BY total_price
+LIMIT 1;
 ```
 
 Final Query:
