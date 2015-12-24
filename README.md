@@ -197,7 +197,8 @@ FROM (
   WHERE f.origin_id IN (
       SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Oregon')
     AND f.destination_id IN (
-      SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania')) leg1
+      SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania')
+        AND f.departure_time > '2011-05-06' AND f.departure_time < '2011-06-17' AND f.distance <= 400) leg1
   JOIN (
     SELECT f.id, f.price, f.departure_time, 1 as match
     FROM flights f
@@ -206,7 +207,8 @@ FROM (
         WHERE s.name = 'Pennsylvania')
       AND f.destination_id IN (
         SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id
-        WHERE s.name = 'Arkansas')) leg2
+        WHERE s.name = 'Arkansas')
+          AND f.departure_time > '2011-05-06' AND f.departure_time < '2011-06-17' AND f.distance <= 400) leg2
     ON leg1.match = leg2.match
 WHERE leg1.arrival_time < leg2.departure_time
 ORDER BY total_price
