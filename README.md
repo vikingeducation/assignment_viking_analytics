@@ -118,5 +118,100 @@ WHERE f.origin_id IN (
 SELECT MIN(distance), MAX(distance) FROM flights;
 ```
 
+## Advanced
+
+**Find the most popular travel destination for users who live in Kansas.**
+```
+SELECT c.name
+FROM cities c
+  JOIN airports a ON a.city_id = c.id
+  JOIN flights f ON f.destination_id = a.id
+  JOIN tickets t ON t.flight_id = f.id
+  JOIN itineraries i ON i.id = t.itinerary_id
+  JOIN users u ON u.id = i.user_id
+  JOIN states s ON s.id = u.state_id
+WHERE s.name = 'Kansas'
+GROUP BY c.name
+ORDER BY COUNT(i.id) DESC LIMIT 1;
+```
+
+**How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.**
+```
+SELECT count(f.id)
+FROM flights f
+  JOIN flights fr ON f.origin_id = fr.destination_id
+WHERE f.destination_id = fr.origin_id
+  AND f.arrival_time < fr.departure_time;
+```
+
+**Find the cheapest flight that was taken by a user who only had one itinerary.**
+```
+SELECT MIN(f.price)
+FROM flights f
+  JOIN tickets t ON t.flight_id = f.id
+  JOIN itineraries i ON i.id = t.itinerary_id
+  JOIN users u ON u.id = i.user_id
+GROUP BY u.id
+HAVING COUNT(i.id) = 1
+ORDER BY MIN(f.price) LIMIT 1;
+```
+
+**Find the average cost of a flight itinerary for users in each state in 2012.**
+```
+SELECT s.name, AVG(it.cost)
+FROM states s
+  JOIN users u ON u.state_id = s.id
+  JOIN itineraries i ON u.id = i.user_id
+  JOIN (
+    SELECT i.id, SUM(f.price) as cost
+    FROM flights f
+      JOIN tickets t ON t.flight_id = f.id
+      JOIN itineraries i ON i.id = t.itinerary_id
+    GROUP BY i.id) as it ON it.id = i.id
+GROUP BY s.id;
+```
+
+**Bonus:** You're a tourist. It's May 6, 2013 (change to 2011). Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
+
+All flights first leg:
+```
+SELECT f.id, f.price, f.arrival_time FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Oregon') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania') AND f.departure_time > '2011-05-06' AND f.departure_time < '2011-06-17' AND f.distance <= 400;
+```
+
+All flights second leg:
+```
+SELECT f.id, f.price, f.arrival_time, 1 FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Arkansas') AND f.departure_time > '2011-05-06' AND f.departure_time < '2011-06-17' AND f.distance <= 400;
+```
+
+All physically possible combinations, ignoring start date, end date, and distance requirements so that I actually have data left:
+```
+SELECT *, (leg1.price + leg2.price) as total_price FROM (SELECT f.id, f.price, f.arrival_time, 1 as match FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Oregon') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania')) leg1 JOIN (SELECT f.id, f.price, f.departure_time, 1 as match FROM flights f WHERE f.origin_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania') AND f.destination_id IN (SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Arkansas')) leg2 ON leg1.match = leg2.match WHERE leg1.arrival_time < leg2.departure_time;
+```
+
+Final Query:
+```
+SELECT *, (leg1.price + leg2.price) as total_price
+FROM (
+  SELECT f.id, f.price, f.arrival_time, 1 as match
+  FROM flights f
+  WHERE f.origin_id IN (
+      SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Oregon')
+    AND f.destination_id IN (
+      SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id WHERE s.name = 'Pennsylvania')) leg1
+  JOIN (
+    SELECT f.id, f.price, f.departure_time, 1 as match
+    FROM flights f
+    WHERE f.origin_id IN (
+        SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id
+        WHERE s.name = 'Pennsylvania')
+      AND f.destination_id IN (
+        SELECT a.id FROM airports a JOIN states s ON s.id = a.state_id
+        WHERE s.name = 'Arkansas')) leg2
+    ON leg1.match = leg2.match
+WHERE leg1.arrival_time < leg2.departure_time
+ORDER BY total_price
+LIMIT 1;
+```
+
 *Merge origin and destination airport ids:*
 SELECT id, origin_id as airport_id FROM flights UNION SELECT id, destination_id as airport_id FROM flights;
