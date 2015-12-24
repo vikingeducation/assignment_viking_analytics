@@ -8,6 +8,8 @@ gem 'pg'
 
 gem 'hirb'
 
+gem 'awesome_print'
+
 gem 'faker'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
