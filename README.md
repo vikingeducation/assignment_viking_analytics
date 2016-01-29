@@ -39,3 +39,20 @@ JOIN flights ON flight_id = flights.id
 JOIN airports ON airports.id IN (destination_id, origin_id)
 WHERE first_name || ' ' || last_name LIKE 'Dannie D''Amore'
 AND departure_time > '2012-01-01'
+
+Queries 2:
+
+--1
+SELECT *
+FROM airports JOIN states on state_id=states.id
+JOIN flights ON destination_id=airports.id
+WHERE name='California'
+ORDER BY price DESC
+LIMIT 5
+
+--2
+SELECT MIN(distance)
+FROM users JOIN itineraries ON user_id=users.id
+JOIN tickets ON itinerary_id=itineraries.id
+JOIN flights on flight_id=flights.id
+WHERE username='hoyt'
