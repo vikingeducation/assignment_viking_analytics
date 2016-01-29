@@ -122,4 +122,16 @@ LIMIT 3
 
 
 5.Count all flights to or from the city of Lake Vivienne that did not land in Florida
+
+Flight.find_by_sql("
+SELECT COUNT(*) AS Flights_NOT_IN_FLORIDA from flights f
+JOIN airports a ON f.origin_id = a.id
+JOIN cities c ON c.id = a.city_id
+WHERE c.name = 'Lake Eino' and f.destination_id IN (
+  SELECT f.id from flights f
+  JOIN airports a ON f.destination_id = a.id 
+  JOIN states s ON s.id = a.state_id
+  WHERE s.name != 'Florida')
+")
+
 Return the range of lengths of flights in the system(the maximum, and the minimum).
