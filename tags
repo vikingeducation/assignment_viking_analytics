@@ -1,0 +1,41 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AddDistanceToFlights	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722173801_add_distance_to_flights.rb	/^class AddDistanceToFlights < ActiveRecord::Migration$/;"	c
+Airline	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/airline.rb	/^class Airline < ActiveRecord::Base$/;"	c
+AirlinesNowHaveFlights	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722021615_airlines_now_have_flights.rb	/^class AirlinesNowHaveFlights < ActiveRecord::Migration$/;"	c
+Airport	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/airport.rb	/^class Airport < ActiveRecord::Base$/;"	c
+Application	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/config/application.rb	/^  class Application < Rails::Application$/;"	c	class:AssignmentVikingAnalytics
+ApplicationController	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/controllers/application_controller.rb	/^class ApplicationController < ActionController::Base$/;"	c
+ApplicationHelper	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/helpers/application_helper.rb	/^module ApplicationHelper$/;"	m
+AssignmentVikingAnalytics	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/config/application.rb	/^module AssignmentVikingAnalytics$/;"	m
+City	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/city.rb	/^class City < ActiveRecord::Base$/;"	c
+CreateAirlines	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002819_create_airlines.rb	/^class CreateAirlines < ActiveRecord::Migration$/;"	c
+CreateAirports	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002757_create_airports.rb	/^class CreateAirports < ActiveRecord::Migration$/;"	c
+CreateCities	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002807_create_cities.rb	/^class CreateCities < ActiveRecord::Migration$/;"	c
+CreateFlights	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002803_create_flights.rb	/^class CreateFlights < ActiveRecord::Migration$/;"	c
+CreateItineraries	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002830_create_itineraries.rb	/^class CreateItineraries < ActiveRecord::Migration$/;"	c
+CreateStates	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002811_create_states.rb	/^class CreateStates < ActiveRecord::Migration$/;"	c
+CreateTickets	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002823_create_tickets.rb	/^class CreateTickets < ActiveRecord::Migration$/;"	c
+CreateUsers	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002753_create_users.rb	/^class CreateUsers < ActiveRecord::Migration$/;"	c
+Flight	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/flight.rb	/^class Flight < ActiveRecord::Base$/;"	c
+Itinerary	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/itinerary.rb	/^class Itinerary < ActiveRecord::Base$/;"	c
+State	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/state.rb	/^class State < ActiveRecord::Base$/;"	c
+Ticket	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/ticket.rb	/^class Ticket < ActiveRecord::Base$/;"	c
+User	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/app/models/user.rb	/^class User < ActiveRecord::Base$/;"	c
+airport_code	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/seeds.rb	/^def airport_code$/;"	f
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002753_create_users.rb	/^  def change$/;"	f	class:CreateUsers
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002757_create_airports.rb	/^  def change$/;"	f	class:CreateAirports
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002803_create_flights.rb	/^  def change$/;"	f	class:CreateFlights
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002807_create_cities.rb	/^  def change$/;"	f	class:CreateCities
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002811_create_states.rb	/^  def change$/;"	f	class:CreateStates
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002819_create_airlines.rb	/^  def change$/;"	f	class:CreateAirlines
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002823_create_tickets.rb	/^  def change$/;"	f	class:CreateTickets
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722002830_create_itineraries.rb	/^  def change$/;"	f	class:CreateItineraries
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722021615_airlines_now_have_flights.rb	/^  def change$/;"	f	class:AirlinesNowHaveFlights
+change	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/migrate/20150722173801_add_distance_to_flights.rb	/^  def change$/;"	f	class:AddDistanceToFlights
+random_hours_later	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/seeds.rb	/^def random_hours_later(time)$/;"	f
+random_time	/Users/kitlangton/Viking/Unit9/assignment_viking_airlines/db/seeds.rb	/^def random_time$/;"	f
