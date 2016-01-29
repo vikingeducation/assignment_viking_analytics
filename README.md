@@ -56,12 +56,70 @@ WHERE a.code = 'SQU'
 
 
 Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby. (can't find special character, but it would be 'D\'\Amore' or 'D'''Amore')
+
 ```
-Ticket.find_by_sql("
-SELECT t.id from tickets t 
-JOIN itineraries i ON i.id = t.itinerary_id
-JOIN users u ON u.id = i.user_id
-WHERE u.first_name = 'Dannie'
+Airport.find_by_sql(
+"SELECT a.long_name from users u
+ JOIN itineraries i ON u.id = i.user_id
+ JOIN tickets t ON t.itinerary_id = i.id
+ JOIN flights f ON f.id = t.flight_id
+ JOIN airports a ON a.id = f.origin_id OR a.id = f.destination_id
+ WHERE u.first_name ='Ilene'")
+```
+
+Queries 2: Adding in Aggregation
+
+1. Find the top 5 most expensive flights that end in California.
+```
+Flight.find_by_sql("
+SELECT f.id,f.price FROM flights f
+JOIN airports a ON f.destination_id = a.id
+JOIN states s ON s.id = a.state_id 
+WHERE s.name ilike 'california'
+ORDER BY f.price DESC
+LIMIT 5
 ")
 
 ```
+2. Find the shortest flight that username "ryann_anderson" took.
+
+```
+User.find_by_sql("
+SELECT u.username, f.id, (f.arrival_time - f.departure_time ) AS flight_time FROM users u
+JOIN itineraries i ON u.id = i.user_id
+JOIN tickets t ON t.itinerary_id = i.id
+JOIN flights f ON t.flight_id = f.id 
+WHERE u.username ilike 'rashad'
+ORDER BY flight_time 
+LIMIT 5
+")
+```
+
+3. Find the average flight distance for every city in Florida
+
+```
+User.find_by_sql("
+SELECT a.city_id,AVG(f.distance) AS Average_Distance FROM flights f
+JOIN airports a ON a.id = f.origin_id OR a.id = f.destination_id
+JOIN states s ON s.id = a.state_id
+WHERE s.name = 'Florida'
+GROUP BY a.city_id
+")
+```
+
+
+4. Find the 3 users who spent the most money on flights in 2013
+
+User.find_by_sql("
+SELECT u.first_name,u.last_name,SUM(f.price) AS Total from users u 
+JOIN itineraries i ON i.user_id = u.id
+JOIN tickets t ON t.itinerary_id = i.id
+JOIN flights f ON f.id = t.flight_id
+GROUP BY u.id
+ORDER BY Total DESC
+LIMIT 3
+")
+
+
+5.Count all flights to or from the city of Lake Vivienne that did not land in Florida
+Return the range of lengths of flights in the system(the maximum, and the minimum).
