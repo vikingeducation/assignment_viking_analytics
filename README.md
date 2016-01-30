@@ -83,3 +83,28 @@ AND NOT flights.id IN (
 -- 6
 SELECT MAX(distance), MIN(distance)
 FROM flights
+
+Queries 3:
+
+-- 1
+
+SELECT destination_states.name, COUNT(*)
+FROM users JOIN states AS home_states on users.state_id=home_states.id
+JOIN itineraries ON user_id=users.id
+JOIN tickets ON itinerary_id=itineraries.id
+JOIN flights ON flight_id=flights.id
+JOIN airports ON airports.id=destination_id
+JOIN states AS destination_states ON airports.state_id=destination_states.id
+WHERE home_states.name='California'
+GROUP BY destination_states.name
+ORDER BY 2 DESC
+
+-- 2
+
+SELECT origins.arrival_time, destinations.departure_time
+FROM flights destinations JOIN flights origins ON destinations.origin_id=origins.destination_id
+WHERE destinations.destination_id=origins.origin_id
+AND origins.arrival_time < destinations.departure_time
+
+--3
+
