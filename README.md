@@ -56,3 +56,30 @@ FROM users JOIN itineraries ON user_id=users.id
 JOIN tickets ON itinerary_id=itineraries.id
 JOIN flights on flight_id=flights.id
 WHERE username='hoyt'
+
+-- 4
+SELECT first_name, last_name, SUM(price)
+FROM users JOIN itineraries ON user_id = users.id
+JOIN tickets ON itinerary_id = itineraries.id
+JOIN flights ON flight_id = flights.id
+WHERE CAST (departure_time AS VARCHAR) LIKE '2013%'
+GROUP BY users.id
+ORDER BY 3 DESC
+LIMIT 3
+
+-- 5
+
+SELECT COUNT(*)
+FROM cities JOIN airports ON city_id = cities.id
+JOIN flights ON airports.id IN (destination_id, origin_id)
+WHERE cities.name LIKE 'Lake Hollisfort'
+AND NOT flights.id IN (
+  SELECT flights.id
+  FROM states JOIN airports ON state_id = states.id
+  JOIN flights ON airports.id IN (destination_id)
+  WHERE name = 'Florida'
+)
+
+-- 6
+SELECT MAX(distance), MIN(distance)
+FROM flights
