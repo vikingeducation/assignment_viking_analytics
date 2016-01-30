@@ -109,7 +109,7 @@ GROUP BY a.city_id
 
 
 4. Find the 3 users who spent the most money on flights in 2013
-
+```
 User.find_by_sql("
 SELECT u.first_name,u.last_name,SUM(f.price) AS Total from users u 
 JOIN itineraries i ON i.user_id = u.id
@@ -119,10 +119,10 @@ GROUP BY u.id
 ORDER BY Total DESC
 LIMIT 3
 ")
-
+```
 
 5.Count all flights to or from the city of Lake Vivienne that did not land in Florida
-
+```
 Flight.find_by_sql("
 SELECT COUNT(*) AS Flights_NOT_IN_FLORIDA from flights f
 JOIN airports a ON f.origin_id = a.id
@@ -133,5 +133,70 @@ WHERE c.name = 'Lake Eino' and f.destination_id IN (
   JOIN states s ON s.id = a.state_id
   WHERE s.name != 'Florida')
 ")
+```
 
-Return the range of lengths of flights in the system(the maximum, and the minimum).
+6. Return the range of lengths of flights in the system(the maximum, and the minimum).
+```
+Flight.find_by_sql("
+SELECT min(f.distance), max(f.distance) 
+FROM flights f")
+```
+
+
+1. Find the most popular travel destination for users who live in Kansas.
+```
+City.find_by_sql("
+SELECT c2.name, count(flight_id) FROM cities c
+  JOIN airports a ON a.city_id = c.id
+  JOIN flights f on f.destination_id = a.id
+  JOIN cities c2 ON c.id = a.city_id
+  JOIN tickets t on t.flight_id = f.id
+  JOIN itineraries i on i.id = t.itinerary_id
+  JOIN users u on u.id = i.user_id
+  JOIN states s on s.id = a.state_id
+  WHERE s.name = 'Kansas'
+  GROUP BY c2.name
+  ORDER BY count DESC
+  LIMIT 1
+")
+```
+
+2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+```
+Flight.find_by_sql("
+SELECT COUNT(*) FROM flights f2
+WHERE f2.destination_id IN(
+  SELECT f.origin_id FROM flights f
+  GROUP BY f.origin_id
+  )
+")
+```
+```
+Flight.find_by_sql("
+SELECT COUNT(DISTINCT(f.id)) FROM flights f
+JOIN flights f2 ON f2.origin_id = f.destination_id
+LIMIT 50
+")
+```
+3. Find the cheapest flight that was taken by a user who only had one itinerary.
+```
+Flight.find_by_sql("
+SELECT min(f.price) FROM flights f
+JOIN tickets t ON t.flight_id = f.id
+JOIN itineraries i ON t.itinerary_id = i.id
+JOIN users u ON i.user_id = u.id
+WHERE u.id IN (
+    -- users with only one flight
+    SELECT u.id FROM users u
+    JOIN itineraries i on i.user_id = u.id
+    GROUP BY u.id
+    HAVING count(i.id) = 1
+    )
+")
+```
+4. Find the average cost of a flight itinerary for users in each state in 2012.
+```
+```
+5. Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
+```
+```
