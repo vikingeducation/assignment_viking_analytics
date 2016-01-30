@@ -52,10 +52,19 @@ Here are some queries we'd like you to answer using this ActiveRecord database. 
       ON origin_id=O.id
     JOIN airports D
       ON destination_id = D.id
-    ;
+    WHERE O.code='LYT' OR D.code='LYT';
   ```
 
 6. Get a list of all airports visited by user Danny D'Amore after January 1, 2015. (Hint, see if you can get a list of all ticket IDs first).
+
+  ```
+  SELECT first_name, tickets.id
+    FROM tickets JOIN itineraries
+      ON itinerary_id=itineraries.id
+    JOIN users
+      ON user_id=users.id
+    WHERE first_name='Danny' AND last_name='D/'Amore';
+  ```
 
 ### JOIN and Aggregate
 
