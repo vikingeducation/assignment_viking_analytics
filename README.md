@@ -108,3 +108,47 @@ AND origins.arrival_time < destinations.departure_time
 
 --3
 
+SELECT users.id, flights.id, MIN(price)
+FROM flights JOIN tickets ON flight_id = flights.id
+JOIN itineraries ON itinerary_id = itineraries.id
+JOIN users ON user_id = users.id
+GROUP BY users.id, flights.id
+HAVING users.id IN (SELECT users.id
+FROM users JOIN itineraries ON user_id = users.id
+GROUP BY users.id
+HAVING COUNT(*) = 1)
+
+-- 4
+SELECT states.name, ROUND(CAST(AVG(price) AS numeric), 2)
+FROM users JOIN states ON state_id = states.id
+JOIN itineraries ON user_id = users.id
+JOIN tickets ON itinerary_id = itineraries.id
+JOIN flights ON flight_id = flights.id
+GROUP BY states.name
+
+-- 5
+
+SELECT firsts.price + seconds.price + thirds.price AS total, firsts.id, firsts_states.name, seconds.id, seconds_states.name, thirds.id, thirds_states.name
+FROM flights firsts JOIN flights seconds ON firsts.destination_id=seconds.origin_id
+JOIN flights thirds ON seconds.destination_id=thirds.origin_id
+JOIN airports firsts_airports ON firsts_airports.id = firsts.origin_id
+JOIN airports seconds_airports ON seconds_airports.id = seconds.origin_id
+JOIN airports thirds_airports ON thirds_airports.id = thirds.origin_id
+JOIN states firsts_states ON firsts_states.id = firsts_airports.state_id
+JOIN states seconds_states ON seconds_states.id = seconds_airports.state_id
+JOIN states thirds_states ON thirds_states.id = thirds_airports.state_id
+WHERE firsts_states.name IN ('Oregon', 'Pennsylvania', 'Arkansas')
+AND seconds_states.name IN ('Oregon', 'Pennsylvania', 'Arkansas')
+AND thirds_states.name IN ('Oregon', 'Pennsylvania', 'Arkansas')
+AND firsts_states.name != seconds_states.name
+AND seconds_states.name != thirds_states.name
+AND thirds_states.name != firsts_states.name
+AND firsts.distance <= 400
+AND seconds.distance <= 400
+AND thirds.distance <= 400
+AND firsts.departure_time BETWEEN '2013-05-06' AND '2013-06-20'
+AND seconds.departure_time BETWEEN '2013-05-06' AND '2013-06-20'
+AND seconds.departure_time > firsts.departure_time
+AND thirds.departure_time BETWEEN '2013-05-06' AND '2013-06-20'
+AND thirds.departure_time > seconds.departure_time
+ORDER BY total
