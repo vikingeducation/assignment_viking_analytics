@@ -43,19 +43,23 @@ AND departure_time > '2012-01-01'
 Queries 2:
 
 --1
+```sql
 SELECT *
 FROM airports JOIN states on state_id=states.id
 JOIN flights ON destination_id=airports.id
 WHERE name='California'
 ORDER BY price DESC
 LIMIT 5
+```
 
 --2
+```sql
 SELECT MIN(distance)
 FROM users JOIN itineraries ON user_id=users.id
 JOIN tickets ON itinerary_id=itineraries.id
 JOIN flights on flight_id=flights.id
 WHERE username='hoyt'
+```
 
 -- 4
 SELECT first_name, last_name, SUM(price)
