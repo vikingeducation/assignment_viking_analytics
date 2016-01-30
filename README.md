@@ -111,10 +111,12 @@ GROUP BY a.city_id
 4. Find the 3 users who spent the most money on flights in 2013
 ```
 User.find_by_sql("
-SELECT u.first_name,u.last_name,SUM(f.price) AS Total from users u 
+SELECT u.first_name,u.last_name,SUM(f.price) AS Total
+FROM users u 
 JOIN itineraries i ON i.user_id = u.id
 JOIN tickets t ON t.itinerary_id = i.id
 JOIN flights f ON f.id = t.flight_id
+WHERE f.departure_time BETWEEN '2013-01-01' AND '2013-12-31'
 GROUP BY u.id
 ORDER BY Total DESC
 LIMIT 3

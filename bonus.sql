@@ -25,7 +25,13 @@ GROUP BY s.name, s2.name, f.price, f.distance, f.departure_time
 
 ) as nested
 
-GROUP BY nested.orig, nested.dest, nested.price, nested.distance, nested.departure_time
+-- GROUP BY nested.orig, nested.dest, nested.price, nested.distance, nested.departure_time
+WHERE
+  CASE WHEN nested.dest = 'Pennsylvania' OR nested.orig = 'Pennsylvania' THEN 'success'
+    END AS success
+  FROM nested
+
+
 HAVING count(nested.dest = 'Pennsylvania') = 1
   OR count(nested.orig = 'Pennsylvania') = 1 
   AND count(nested.dest = 'Arkansas') = 1 
@@ -34,3 +40,6 @@ HAVING count(nested.dest = 'Pennsylvania') = 1
   OR count(nested.orig = 'Oregon') = 1 
 
 ")
+
+
+
