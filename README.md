@@ -2,6 +2,7 @@
 
 
 Kit & Thomas
+```sql
 -- Queries 1: Warmups
 
 -- 1
@@ -40,28 +41,29 @@ JOIN airports ON airports.id IN (destination_id, origin_id)
 WHERE first_name || ' ' || last_name LIKE 'Dannie D''Amore'
 AND departure_time > '2012-01-01'
 
-Queries 2:
+--Queries 2:
 
 --1
-```sql
+
 SELECT *
 FROM airports JOIN states on state_id=states.id
 JOIN flights ON destination_id=airports.id
 WHERE name='California'
 ORDER BY price DESC
 LIMIT 5
-```
+
 
 --2
-```sql
+
 SELECT MIN(distance)
 FROM users JOIN itineraries ON user_id=users.id
 JOIN tickets ON itinerary_id=itineraries.id
 JOIN flights on flight_id=flights.id
 WHERE username='hoyt'
-```
+
 
 -- 4
+
 SELECT first_name, last_name, SUM(price)
 FROM users JOIN itineraries ON user_id = users.id
 JOIN tickets ON itinerary_id = itineraries.id
@@ -71,7 +73,9 @@ GROUP BY users.id
 ORDER BY 3 DESC
 LIMIT 3
 
+
 -- 5
+
 
 SELECT COUNT(*)
 FROM cities JOIN airports ON city_id = cities.id
@@ -84,11 +88,12 @@ AND NOT flights.id IN (
   WHERE name = 'Florida'
 )
 
+
 -- 6
 SELECT MAX(distance), MIN(distance)
 FROM flights
 
-Queries 3:
+-- Queries 3:
 
 -- 1
 
@@ -156,3 +161,4 @@ AND seconds.departure_time > firsts.departure_time
 AND thirds.departure_time BETWEEN '2013-05-06' AND '2013-06-20'
 AND thirds.departure_time > seconds.departure_time
 ORDER BY total
+```
