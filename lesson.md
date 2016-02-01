@@ -72,13 +72,78 @@ SELECT last_name, first_name, long_name, arrival_time, departure_time
 1. Find the top 5 most expensive flights that end in California.
 
 ```
+SELECT *
+  FROM flights JOIN airports ON destination_id=airports.id
+  JOIN states ON state_id=states.id
+  WHERE name='California'
+  ORDER BY price DESC
+  LIMIT 5
+```
+
+2. Find the shortest flight that username "ryann_anderson" took. (username='scarlett_purdy' for this DB seed)
+
+```
+SELECT *
+  FROM tickets JOIN itineraries ON itinerary_id=itineraries.id
+  JOIN flights ON flight_id=flights.id
+  JOIN users ON user_id=users.id
+  WHERE username='scarlett_purdy'
+  ORDER BY distance DESC
+  LIMIT 1
+```
+
+3. Find the average flight distance for every city in Florida
+
+```
+SELECT ROUND(AVG(distance)), cities.name
+  FROM flights JOIN airports ON airports.id IN (origin_id, destination_id)
+  JOIN states ON state_id=states.id
+  JOIN cities ON city_id=cities.id
+  WHERE states.name='Florida'
+  GROUP BY cities.name
+
+--QUERIES DONT WORK BECAUSE SEED CREATES INDICES FOR CITIES THAT DON'T EXIST!!!
+
+SELECT ROUND(AVG(distance)), OC.name
+  FROM flights JOIN airports AS O ON origin_id=O.id
+  	JOIN states AS OS ON O.state_id=OS.id
+  	JOIN cities AS OC ON O.city_id=OC.id
+  JOIN airports AS D ON destination_id=D.id
+  	JOIN states AS DS ON D.state_id=DS.id
+  	JOIN cities AS DC ON D.city_id=DC.id
+  WHERE OS.name='Florida' OR DS.name='Florida'
+  GROUP BY OC.name, DC.name
+```
+
+4. Find the 3 users who spent the most money on flights in 2013
+
+```
+SELECT users.last_name, users.first_name, SUM(price)
+  FROM users JOIN itineraries ON users.id=user_id
+  JOIN tickets ON itineraries.id=itinerary_id
+  JOIN flights ON flight_id=flights.id
+  WHERE (departure_time BETWEEN '2013-01-01' AND '2013-12-31')
+  OR (arrival_time BETWEEN '2013-01-01' AND '2013-12-31')
+  GROUP BY users.last_name, users.first_name
+  ORDER BY SUM(price) DESC
+  LIMIT 3
+```
+
+5. Count all flights to or from the city of Lake Vivienne that did not land in Florida (used another city 'South Ollie' instead of Lake Vivienne)
+
+```
+SELECT *
+  FROM flights JOIN airports ON airports.id IN (origin_id, destination_id)
+  JOIN cities ON city_id=cities.id
+
+SELECT *
+  FROM flights JOIN airports AS O ON origin_id=O.id
+    JOIN cities AS OC ON O.city_id=OC.id
+  JOIN airports AS D ON destination_id=D.id
+    JOIN cities AS DC ON D.city_id=DC.id
 
 ```
 
-2. Find the shortest flight that username "ryann_anderson" took.
-3. Find the average flight distance for every city in Florida
-4. Find the 3 users who spent the most money on flights in 2013
-5. Count all flights to or from the city of Lake Vivienne that did not land in Florida
 6. Return the range of lengths of flights in the system(the maximum, and the minimum).
 
 
