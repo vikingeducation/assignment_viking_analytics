@@ -211,6 +211,15 @@ User.find_by_sql("
 ```
 ### Find the average cost of a flight itinerary for users in each state in 2012.
 ```sql
-
+User.find_by_sql("
+  SELECT AVG(flights.price), states.name
+  FROM tickets
+  JOIN flights ON tickets.flight_id = flights.id
+  JOIN itineraries ON itineraries.id = tickets.itinerary_id
+  JOIN users ON users.id = itineraries.user_id
+  JOIN states ON users.state_id = states.id
+  WHERE flights.departure_time BETWEEN '2012-01-01' AND '2012-12-31'
+  GROUP BY states.name
+  ")
 ```
 ### Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
