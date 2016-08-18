@@ -177,15 +177,16 @@ User.find_by_sql("
 User.find_by_sql("
   SELECT airports.long_name
   FROM
-    (SELECT *
+    (SELECT DISTINCT f1.origin_id, f1.destination_id
     FROM
       flights f1
       JOIN flights f2
       ON f1.origin_id = f2.destination_id
       AND f1.destination_id = f2.origin_id
     WHERE
-      f1.id <> f2.id) AS joint_table 
-    JOIN airports ON flights.origin_id = airports.id
+      f1.id <> f2.id
+    ORDER BY f1.origin_id) AS joint_table
+    JOIN airports ON airports.id = origin_id
   ")
 ```
 ### Find the cheapest flight that was taken by a user who only had one itinerary.
