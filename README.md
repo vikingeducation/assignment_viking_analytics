@@ -142,3 +142,9 @@ User.find_by_sql("
   ")
 ```
 ### Return the range of lengths of flights in the system(the maximum, and the minimum).
+```sql
+User.find_by_sql("
+  SELECT MAX(distance), MIN(distance)
+  FROM flights
+  ")
+```
