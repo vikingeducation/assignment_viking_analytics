@@ -116,4 +116,29 @@ User.find_by_sql("
   ")
 ```
 ### Count all flights to or from the city of Lake Vivienne that did not land in Florida
+```sql
+User.find_by_sql("
+  SELECT SUM(count) AS all_flights
+  FROM
+    (SELECT COUNT(flights.id)
+    FROM flights JOIN airports ON flights.origin_id = airports.id
+    JOIN cities ON airports.city_id = cities.id
+    JOIN states ON airports.state_id = states.id
+    WHERE cities.name = 'Lake Vivienne'
+      AND flights.destination_id NOT IN
+      (SELECT airports.id
+      FROM airports JOIN states ON airports.state_id = states.id
+      WHERE states.name = 'Florida')
+    UNION
+    SELECT COUNT(flights.id)
+    FROM flights JOIN airports ON flights.destination_id = airports.id
+    JOIN cities ON airports.city_id = cities.id
+    JOIN states ON airports.state_id = states.id
+    WHERE cities.name = 'Lake Vivienne'
+      AND flights.origin_id NOT IN
+      (SELECT airports.id
+      FROM airports JOIN states ON airports.state_id = states.id
+      WHERE states.name = 'Florida')) AS joint_table
+  ")
+```
 ### Return the range of lengths of flights in the system(the maximum, and the minimum).
