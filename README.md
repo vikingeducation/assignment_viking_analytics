@@ -174,7 +174,19 @@ User.find_by_sql("
 ```
 ### How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
 ```sql
-
+User.find_by_sql("
+  SELECT airports.long_name
+  FROM
+    (SELECT *
+    FROM
+      flights f1
+      JOIN flights f2
+      ON f1.origin_id = f2.destination_id
+      AND f1.destination_id = f2.origin_id
+    WHERE
+      f1.id <> f2.id) AS joint_table 
+    JOIN airports ON flights.origin_id = airports.id
+  ")
 ```
 ### Find the cheapest flight that was taken by a user who only had one itinerary.
 ### Find the average cost of a flight itinerary for users in each state in 2012.
