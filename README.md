@@ -190,5 +190,27 @@ User.find_by_sql("
   ")
 ```
 ### Find the cheapest flight that was taken by a user who only had one itinerary.
+```sql
+User.find_by_sql("
+  SELECT flights.id, flights.price
+  FROM tickets
+  JOIN flights ON tickets.flight_id = flights.id
+  JOIN itineraries ON itineraries.id = tickets.itinerary_id
+  JOIN users ON users.id = itineraries.user_id
+  WHERE users.username IN
+    (SELECT users.username
+    FROM tickets
+    JOIN flights ON tickets.flight_id = flights.id
+    JOIN itineraries ON itineraries.id = tickets.itinerary_id
+    JOIN users ON users.id = itineraries.user_id
+    GROUP BY users.username
+    HAVING count(itineraries) = 1)
+  ORDER BY price
+  LIMIT 10
+  ")
+```
 ### Find the average cost of a flight itinerary for users in each state in 2012.
+```sql
+
+```
 ### Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
