@@ -2,7 +2,7 @@
 
 Bran Liang
 
-## Queries 1: Warmups
+# Queries 1: Warmups
 ### Get a list of all users in California
 ```sql
 User.find_by_sql("
@@ -47,13 +47,15 @@ User.find_by_sql("
 ### Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
 ```sql
 User.find_by_sql("
-  SELECT DISTINCT airports.long_name, flights.departure_time FROM (tickets JOIN itineraries ON tickets.itinerary_id = itineraries.id)
+  SELECT DISTINCT airports.long_name, flights.departure_time
+  FROM (tickets JOIN itineraries ON tickets.itinerary_id = itineraries.id)
   JOIN users ON itineraries.user_id = users.id
   JOIN flights ON tickets.flight_id = flights.id
   JOIN airports ON airports.id = flights.origin_id
   WHERE users.first_name = 'Dannie' AND users.last_name = 'D''Amore' AND flights.departure_time > '2012-01-01'
   UNION
-  SELECT DISTINCT airports.long_name, flights.departure_time FROM (tickets JOIN itineraries ON tickets.itinerary_id = itineraries.id)
+  SELECT DISTINCT airports.long_name, flights.departure_time
+  FROM (tickets JOIN itineraries ON tickets.itinerary_id = itineraries.id)
   JOIN users ON itineraries.user_id = users.id
   JOIN flights ON tickets.flight_id = flights.id
   JOIN airports ON airports.id = flights.destination_id
@@ -62,7 +64,7 @@ User.find_by_sql("
 ```
 
 
-## Queries 2: Adding in Aggregation
+# Queries 2: Adding in Aggregation
 ### Find the top 5 most expensive flights that end in California.
 ```sql
 User.find_by_sql("
@@ -148,3 +150,32 @@ User.find_by_sql("
   FROM flights
   ")
 ```
+
+
+# Queries 3: Advanced
+### Find the most popular travel destination for users who live in Kansas.
+```sql
+User.find_by_sql("
+  SELECT states.name, COUNT(states.name) AS num
+  FROM tickets
+  JOIN flights ON tickets.flight_id = flights.id
+  JOIN airports ON airports.id = flights.destination_id
+  JOIN cities ON cities.id = airports.city_id
+  JOIN states ON states.id = airports.state_id
+  JOIN itineraries ON itineraries.id = tickets.itinerary_id
+  JOIN users ON users.id = itineraries.user_id
+  WHERE users.state_id = (
+    SELECT states.id
+    FROM states
+    WHERE states.name = 'Kansas')
+  GROUP BY states.name
+  ORDER BY num DESC
+  ")
+```
+### How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+```sql
+
+```
+### Find the cheapest flight that was taken by a user who only had one itinerary.
+### Find the average cost of a flight itinerary for users in each state in 2012.
+### Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
