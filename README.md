@@ -83,9 +83,37 @@ User.find_by_sql("
   JOIN users ON users.id = itineraries.user_id
   WHERE users.username = 'ryann[_]anderson'
   ORDER BY distance
+  LIMIT 1
   ")
 ```
 ### Find the average flight distance for flights entering or leaving each city in Florida
+```sql
+User.find_by_sql("
+  SELECT AVG(distance)
+  FROM
+    (SELECT distance
+    FROM flights JOIN airports ON flights.origin_id = airports.id
+    JOIN states ON states.id = airports.state_id
+    WHERE states.name = 'Florida'
+    UNION
+    SELECT distance
+    FROM flights JOIN airports ON flights.destination_id = airports.id
+    JOIN states ON states.id = airports.state_id
+    WHERE states.name = 'Florida') AS joint_table
+  ")
+```
 ### Find the 3 users who spent the most money on flights in 2013
+```sql
+User.find_by_sql("
+  SELECT users.username, SUM(price) AS sum_price
+  FROM flights JOIN tickets ON flights.id = tickets.flight_id
+  JOIN itineraries ON tickets.itinerary_id = itineraries.id
+  JOIN users ON users.id = itineraries.user_id
+  WHERE flights.departure_time BETWEEN '2013-01-01' AND '2013-12-31'
+  GROUP BY users.username
+  ORDER BY sum_price DESC
+  LIMIT 3
+  ")
+```
 ### Count all flights to or from the city of Lake Vivienne that did not land in Florida
 ### Return the range of lengths of flights in the system(the maximum, and the minimum).
