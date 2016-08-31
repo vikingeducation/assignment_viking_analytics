@@ -1,2 +1,2 @@
-class Airport < ActiveRecord::Base
+class Airport < ApplicationRecord
 end

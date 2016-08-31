@@ -1,2 +1,2 @@
-class Airline < ActiveRecord::Base
+class Airline < ApplicationRecord
 end
