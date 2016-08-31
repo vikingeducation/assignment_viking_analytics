@@ -1,2 +1,2 @@
-class Itinerary < ActiveRecord::Base
+class Itinerary < ApplicationRecord
 end
