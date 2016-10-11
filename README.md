@@ -77,3 +77,49 @@ Intermediate
         WHERE states.name = 'Florida')) AS joint_table;
 6.  SELECT MAX(distance), MIN(distance)
     FROM flights;
+
+Advanced
+1.  SELECT states.name, COUNT(states.name) AS num_travels
+    FROM tickets
+    JOIN flights ON tickets.flight_id=flights.id
+    JOIN airports ON airports.id=flights.destination_id
+    JOIN cities ON cities.id=airports.city_id
+    JOIN states ON states.id=airports.state_id
+    JOIN itineraries ON itineraries.id=tickets.itinerary_id
+    JOIN users ON users.id=itineraries.user_id
+    WHERE users.state_id=(SELECT states.id
+                          FROM states
+                          WHERE states.name='Kansas')
+    GROUP BY states.name
+    ORDER BY num_travels DESC;
+2.  SELECT airports.long_name
+    FROM
+      (SELECT DISTINCT f1.origin_id, f1.destination_id
+       FROM flights f1 JOIN flights f2
+       ON f1.origin_id=f2.destination_id
+       AND f1.destination_id=f2.origin_id
+       WHERE f1.id <> f2.id
+       ORDER BY f1.origin_id) AS joint_table
+    JOIN airports ON airports.id=origin_id;
+3.  SELECT flights.id, flights.price, users.first_name
+    FROM flights JOIN tickets ON tickets.flight_id=flights.id
+    JOIN itineraries ON itineraries.id=tickets.itinerary_id
+    JOIN users ON itineraries.user_id=users.id
+    WHERE users.username IN
+      (SELECT users.username
+       FROM tickets
+       JOIN flights ON tickets.flight_id=flights.id
+       JOIN itineraries ON itineraries.id=tickets.itinerary_id
+       JOIN users ON users.id=itineraries.user_id
+       GROUP BY users.username
+       HAVING COUNT(itineraries)=1)
+    ORDER BY flights.price
+    LIMIT 1;
+4.  SELECT AVG(flights.price), states.name AS states
+    FROM flights
+    JOIN tickets ON tickets.flight_id=flights.id
+    JOIN itineraries ON itineraries.id=tickets.itinerary_id
+    JOIN users ON users.id=itineraries.user_id
+    JOIN states ON states.id=users.state_id
+    WHERE flights.departure_time BETWEEN '2012-01-01' AND '2012-12-31'
+    GROUP BY states.name;
