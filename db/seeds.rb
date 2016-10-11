@@ -17,7 +17,7 @@ puts "Old data removed.\n\n"
 # increase your seed size by changing this
 # NOTE: This can make it take MUCH longer!
 # A value of 10 can take over 3 minutes
-MULTIPLIER = 1
+MULTIPLIER = 5
 
 
 srand(42)

@@ -5,9 +5,8 @@ source 'https://rubygems.org'
 gem 'rails', '5.0.0.1'
 # Use postgresql as the database for Active Record
 gem 'pg'
-
 gem 'hirb'
-
+# gem 'pry-rails'
 gem 'faker'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
