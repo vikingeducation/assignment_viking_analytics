@@ -55,3 +55,138 @@ Get a list of all airports visited by user Dannie D'Amore after January 1, 2012.
     JOIN airports ON flights.destination_id = airports.id
     WHERE users.first_name = 'Dannie' AND users.last_name = 'D''Amore' AND flights.arrival_time > '2012-01-01'
   ")
+
+# Queries 2: Adding in Aggregation
+
+Find the top 5 most expensive flights that end in California.
+
+  Flight.find_by_sql("
+  SELECT flights.id, flights.price, flights.destination_id, airports.state_id, airports.code, states.name
+    FROM flights
+    JOIN airports ON flights.destination_id = airports.id
+    JOIN states ON airports.state_id = states.id
+    WHERE states.name = 'California'
+    ORDER BY flights.price DESC
+    LIMIT 5
+  ")
+
+Find the shortest flight that username "ryann_anderson" took.
+
+  Flight.find_by_sql("
+  SELECT MIN(flights.distance)
+    FROM flights
+    JOIN tickets ON flights.id = tickets.flight_id
+    JOIN itineraries ON tickets.itinerary_id = itineraries.id
+    JOIN users ON itineraries.user_id = users.id
+    WHERE users.username = 'ryann_anderson'
+  ")
+
+Find the average flight distance for flights entering or leaving 
+each city in Florida
+
+  Flight.find_by_sql("
+  SELECT AVG(distance)
+    FROM (
+    SELECT distance 
+      FROM flights
+      JOIN airports ON flights.origin_id = airports.id 
+      JOIN states on airports.state_id = states.id
+      WHERE states.name = 'Florida'
+    UNION
+    SELECT distance
+      FROM flights 
+      JOIN airports ON flights.destination_id = airports.id 
+      JOIN states on airports.state_id = states.id
+      WHERE states.name = 'Florida') 
+        AS florida_flights
+  ")
+
+Find the 3 users who spent the most money on flights in 2013
+
+  User.find_by_sql("
+  SELECT users.*, SUM(flights.price)
+    FROM flights 
+    JOIN tickets ON flights.id = tickets.flight_id
+    JOIN itineraries ON tickets.itinerary_id = itineraries.id
+    JOIN users ON itineraries.user_id = users.id
+    WHERE flights.departure_time BETWEEN '2013-01-01' AND '2012-12-31'
+    GROUP BY users.id
+    ORDER BY SUM(flights.price) DESC
+    LIMIT 3
+  ")
+
+Count all flights to or from the city of Lake Vivienne that did not land in Florida
+
+Flight.find_by_sql("
+SELECT SUM(count)
+FROM (
+  SELECT COUNT(flights.id)  
+    FROM flights 
+    JOIN airports ON flights.origin_id = airports.id
+    JOIN cities ON airports.city_id = cities.id
+    JOIN states ON airports.state_id = states.id
+    WHERE cities.name = 'Lake Vivienne' AND flights.destination_id NOT IN 
+      (SELECT airports.id
+      FROM airports JOIN states on airports.state_id = states.id
+      WHERE states.name = 'Florida')
+  UNION 
+  SELECT COUNT(flights.id)  
+    FROM flights 
+    JOIN airports ON flights.destination_id = airports.id
+    JOIN cities ON airports.city_id = cities.id
+    JOIN states ON airports.state_id = states.id
+    WHERE cities.name = 'Lake Vivienne' AND flights.destination_id NOT IN 
+      (SELECT airports.id
+      FROM airports JOIN states on airports.state_id = states.id
+      WHERE states.name = 'Florida')) AS relevant_flights 
+")
+
+Return the range of lengths of flights in the system(the maximum, and the minimum).
+
+Flight.find_by_sql("
+SELECT MIN(distance), MAX(distance)
+FROM flights
+")
+
+# Queries 3: Advanced
+
+Find the most popular travel destination for users who live in Kansas.
+
+Flight.find_by_sql("
+SELECT flights.destination_id AS dest_id, COUNT(flights.destination_id) as frequency
+FROM users
+JOIN itineraries ON users.id = itineraries.user_id
+JOIN tickets ON itineraries.id = tickets.itinerary_id
+JOIN flights ON tickets.flight_id = flights.id
+WHERE users.state_id IN 
+  (SELECT states.id
+  FROM states
+  WHERE states.name = 'Kansas')
+GROUP BY dest_id
+ORDER BY frequency DESC
+LIMIT 1
+")
+
+How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+
+Airport.find_by_sql("
+SELECT COUNT(*)
+FROM (
+  SELECT leave.id leave_id, leave.origin_id leave_origin, return.destination_id return_dest, return.id return_id, leave.destination_id leave_dest, return.origin_id return_origin
+  FROM flights AS leave 
+  JOIN flights AS return 
+  ON leave.destination_id = return.origin_id
+  AND leave.origin_id = return.destination_id
+) AS relevant_flights
+")
+
+Find the cheapest flight that was taken by a user who only had one itinerary.
+
+Find the average cost of a flight itinerary for users in each state in 2012.
+
+Flight.find_by_sql("
+SELECT states.name, AVG(flights.price)
+
+")
+
+Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
