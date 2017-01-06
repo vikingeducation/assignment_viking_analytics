@@ -201,7 +201,7 @@ Find the cheapest flight that was taken by a user who only had one itinerary.
 Find the average cost of a flight itinerary for users in each state in 2012.
 
     Flight.find_by_sql("
-    SELECT states.id, AVG(flights.price)
+    SELECT states.id, states.name, AVG(flights.price)
       FROM users 
       JOIN itineraries ON users.id = itineraries.user_id
       JOIN tickets ON itineraries.id = tickets.itinerary_id
