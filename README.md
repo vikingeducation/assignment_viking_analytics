@@ -5,13 +5,13 @@ Anthony Sin
 ## Queries 1: Warmups
 
 1. Get a list of all users in California.
-```
-User.find_by_sql("SELECT * FROM users WHERE state_id = 5;")
-```
+    ```
+    User.find_by_sql("SELECT * FROM users WHERE state_id = 5;")
+    ```
 2. Get a list of all airports in Minnesota.
-```
-Airport.find_by_sql("SELECT * FROM airports WHERE state_id = 23;") 
-```
+    ```
+    Airport.find_by_sql("SELECT * FROM airports WHERE state_id = 23;") 
+    ```
 3. Get a list of all payment methods used on itineraries by the user with email address "runolfsdottir.stuart@white.org".
 ```
 Itinerary.find_by_sql("
