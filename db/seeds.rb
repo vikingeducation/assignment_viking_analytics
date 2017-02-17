@@ -17,7 +17,7 @@ puts "Old data removed.\n\n"
 # increase your seed size by changing this
 # NOTE: This can make it take MUCH longer!
 # A value of 10 can take over 3 minutes
-MULTIPLIER = 1
+MULTIPLIER = 2
 
 
 srand(42)
@@ -45,18 +45,18 @@ end
 
 # CREATE STATES
 STATES =
-["Alabama", "Alaska", "Arizona", "Arkansas", "California",
-"Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
-"Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-"Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
-"Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
-"Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
-"New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
-"Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
-"South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-"Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
+  ["Alabama", "Alaska", "Arizona", "Arkansas", "California",
+   "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+   "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+   "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+   "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
+   "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+   "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+   "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+   "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+   "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 
-puts "Creating States..."
+  puts "Creating States..."
 STATES.each do |state_name|
   State.create({:name => state_name})
 end
@@ -124,7 +124,7 @@ puts "Creating Itineraries..."
 User.all.each do |user|
   rand(4).times do
     Itinerary.create!(user_id: user.id,
-                     payment_method: PAYMENT_METHODS.sample)
+                      payment_method: PAYMENT_METHODS.sample)
   end
 end
 puts "Itineraries created.\n\n"
