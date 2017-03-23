@@ -1,1 +1,2 @@
+Dariusz Biskupski
 # assignmnent_viking_analytics
