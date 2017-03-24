@@ -139,7 +139,7 @@ num_states = STATES.length
 num_states_created = 0
 
 STATES.each do |state_name|
-  State.create({:name => state_name})
+  State.create(:name => state_name)
 
 
   num_states_created += 1
@@ -158,7 +158,7 @@ num_cities_created = 0
 
 State.all.each do |state|
   MULTIPLIER.times do
-    City.create( name: Faker::Address.city )
+    City.create(name: Faker::Address.city)
 
 
     num_cities_created += 1
@@ -177,10 +177,12 @@ num_airports = City.count
 num_airports_created = 0
 
 City.all.each do |city|
-  Airport.create(city_id:  city.id,
-                 long_name: "#{city.name} Probably International Airport",
-                 state_id: State.all.sample.id,
-                 code: airport_code )
+  Airport.create(
+    city_id: city.id,
+    long_name: "#{city.name} Probably International Airport",
+    state_id: State.all.sample.id,
+    code: airport_code
+  )
 
 
   num_airports_created += 1
@@ -198,7 +200,11 @@ num_airlines = MULTIPLIER
 num_airlines_created = 0
 
 MULTIPLIER.times do
-  Airline.create(name: "#{Faker::Company.name} #{["Air", "Airlines", "Flights"].sample}")
+  name = [
+    Faker::Company.name,
+    ["Air", "Airlines", "Flights"].sample
+  ].join(' ')
+  Airline.create(name: name)
 
 
   num_airlines_created += 1
@@ -218,12 +224,14 @@ num_users_created = 0
 (num_users).times do
   fname =  Faker::Name.first_name
   lname = Faker::Name.last_name
-  User.create( city_id: City.pluck(:id).sample,
-               state_id: State.pluck(:id).sample,
-               username: Faker::Internet.user_name,
-               email: Faker::Internet.email("#{fname} #{lname}"),
-               first_name: fname,
-               last_name: lname  )
+  User.create(
+    city_id: City.pluck(:id).sample,
+    state_id: State.pluck(:id).sample,
+    username: Faker::Internet.user_name,
+    email: Faker::Internet.email("#{fname} #{lname}"),
+    first_name: fname,
+    last_name: lname
+  )
 
 
   num_users_created += 1
@@ -246,13 +254,15 @@ Airline.all.each do |airline|
   (flights_per_airline).times do |i|
     origin_id, destination_id = Airport.pluck(:id).sample(2)
     departure_time = random_time
-    Flight.create(origin_id: origin_id,
-                  destination_id: destination_id,
-                  departure_time: departure_time,
-                  airline_id: Airline.pluck(:id).sample,
-                  arrival_time: random_hours_later(departure_time),
-                  price: rand(99.99..850.00).round(2),
-                  distance: rand(100..600))
+    Flight.create(
+      origin_id: origin_id,
+      destination_id: destination_id,
+      departure_time: departure_time,
+      airline_id: Airline.pluck(:id).sample,
+      arrival_time: random_hours_later(departure_time),
+      price: rand(99.99..850.00).round(2),
+      distance: rand(100..600)
+    )
 
 
     num_flights_created += 1
@@ -275,8 +285,10 @@ num_itineraries_created = 0
 User.all.each do |user|
   num = randoms.pop
   num.times do
-    Itinerary.create!(user_id: user.id,
-                     payment_method: PAYMENT_METHODS.sample)
+    Itinerary.create!(
+      user_id: user.id,
+      payment_method: PAYMENT_METHODS.sample
+    )
 
 
     num_itineraries_created += 1
@@ -298,9 +310,14 @@ num_tickets_created = 0
 
 Itinerary.all.each do |itinerary|
   num = randoms.pop
+  time = random_time
   num.times do
-    Ticket.create(itinerary_id: itinerary.id,
-                  flight_id: Flight.pluck(:id).sample)
+    Ticket.create(
+      itinerary_id: itinerary.id,
+      flight_id: Flight.pluck(:id).sample,
+      created_at: time,
+      updated_at: time
+    )
 
 
     num_tickets_created += 1
