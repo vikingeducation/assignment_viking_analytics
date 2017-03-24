@@ -4,16 +4,16 @@ SELECT users.username AS username, states.name AS state_name FROM users
   WHERE states.name = 'California'
 ;
 
--- 2. Get a list of all airports in Minnesota
+-- 2. Get a list of all airports in Kadeton
 SELECT airports.long_name AS airport, cities.name AS city FROM airports
   JOIN cities ON cities.id = airports.city_id
-  WHERE cities.name = 'Minnesota'
+  WHERE cities.name = 'Kadeton'
 ;
 
 -- 3. Get a list of all payment methods used on itineraries by the user with email address "heidenreich_kara@kunde.net"
 SELECT users.email AS user_email, itineraries.payment_method AS payment_method FROM itineraries
   JOIN users ON users.id = itineraries.user_id
-  WHERE users.email = 'heidenreich_kara@kunde.net'
+  WHERE users.email = 'senger.krystel@marvin.io'
 ;
 
 -- 4. Get a list of prices of all flights whose origins are in Kochfurt Probably International Airport.
@@ -36,7 +36,7 @@ SELECT airports.long_name AS airport, CONCAT(users.first_name, ' ', users.last_n
   JOIN tickets ON origin.id = tickets.flight_id
   JOIN itineraries ON itineraries.id = tickets.itinerary_id
   JOIN users ON users.id = itineraries.user_id
-  WHERE users.first_name = 'Dannie'
-    AND users.last_name = 'D''Amore'
+  WHERE users.first_name = 'Krystel'
+    AND users.last_name = 'Senger'
     AND origin.departure_time > '2012-1-1'
 ;

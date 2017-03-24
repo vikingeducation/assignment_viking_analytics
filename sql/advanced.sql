@@ -10,7 +10,7 @@ SELECT
   JOIN airports destination ON destination.id = flights.destination_id
   JOIN states destination_state ON destination_state.id = destination.state_id
   JOIN cities destination_city ON destination_city.id = destination.city_id
-  WHERE user_state.name = 'New Hampshire'
+  WHERE user_state.name = 'California'
   GROUP BY city
   ORDER BY count
   LIMIT 1

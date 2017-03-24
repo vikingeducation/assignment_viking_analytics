@@ -18,7 +18,7 @@ SELECT
   JOIN users ON users.id = itineraries.user_id
   JOIN airports origin ON origin.id = flights.origin_id
   JOIN airports destination ON destination.id = flights.destination_id
-  WHERE username = 'ryann_anderson'
+  WHERE username = 'zora_johnson'
   GROUP BY username, flight
 ;
 
@@ -29,7 +29,7 @@ SELECT destination_state.name AS state, cities.name AS city, AVG(flights.distanc
   JOIN states origin_state ON origin_state.id = origin.state_id
   JOIN states destination_state ON destination_state.id = destination.state_id
   JOIN cities ON cities.id = destination.city_id
-  WHERE destination_state.name = 'Florida'
+  WHERE destination_state.name = 'California'
   GROUP BY state, city
 ;
 
@@ -38,7 +38,7 @@ SELECT users.username, SUM(flights.price) AS total_money FROM flights
   JOIN tickets ON flights.id = tickets.flight_id
   JOIN itineraries ON itineraries.id = tickets.itinerary_id
   JOIN users ON users.id = itineraries.user_id
-  WHERE tickets.created_at BETWEEN '2015-1-1' AND '2015-12-31'
+  WHERE tickets.created_at BETWEEN '2013-1-1' AND '2013-12-31'
   GROUP BY users.username
   ORDER BY total_money DESC
   LIMIT 3
@@ -46,18 +46,20 @@ SELECT users.username, SUM(flights.price) AS total_money FROM flights
 
 -- 5. Count all flights to OR from the city of Lake Vivienne that did not land in Florida
 SELECT
-  COUNT(*)
+  destination_state.name,
+  origin_city.name,
+  destination_city.name
   FROM flights
   JOIN airports origin ON origin.id = flights.origin_id
   JOIN airports destination ON destination.id = flights.destination_id
   JOIN states origin_state ON origin_state.id = origin.state_id
   JOIN states destination_state ON destination_state.id = destination.state_id
-  JOIN cities origin_city ON origin_city.id = destination.city_id
+  JOIN cities origin_city ON origin_city.id = origin.city_id
   JOIN cities destination_city ON destination_city.id = destination.city_id
-  WHERE destination_state.name != 'Florida'
+  WHERE destination_state.name != 'Delaware'
     AND (
-      origin_city.name = 'Lake Vivienne'
-      OR destination_city.name = 'Lake Vivienne'
+      origin_city.name = 'Smithshire'
+      OR destination_city.name = 'Smithshire'
     )
 ;
 
@@ -67,3 +69,13 @@ SELECT
   MAX(arrival_time - departure_time) AS max_flight_length
   FROM flights
 ;
+
+
+
+
+
+
+
+
+
+
