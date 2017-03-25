@@ -24,7 +24,29 @@ Airport.find_by_sql("SELECT * FROM airports JOIN states ON airports.state_id = s
 
 
 
-Get a list of all payment methods used on itineraries by the user with email address "heidenreich_kara@kunde.net"
-Get a list of prices of all flights whose origins are in Kochfurt Probably International Airport.
-Find a list of all Airport names and codes which connect to the airport coded LYT.
-Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
+3. Get a list of all payment methods used on itineraries by the user with email address "heidenreich_kara@kunde.net"
+
+Itinerary.find_by_sql("SELECT itineraries.payment_method FROM itineraries JOIN users ON (itineraries.user_id=users.id) WHERE users.email='heidenreich_kara@kunde.net'")
+
+
+
+Itinerary.find_by_sql("SELECT itineraries.payment_method FROM itineraries JOIN users ON (itineraries.user_id=users.id) WHERE users.email='bosco_filomena@klein.co'")
+
+4. Get a list of prices of all flights whose origins are in Kochfurt Probably International Airport.
+Flight.find_by_sql("SELECT flights.price FROM flights JOIN airports ON (flights.origin_id = airports.id) WHERE airports.long_name='Kochfurt Probably International Airport'")
+
+5. Find a list of all Airport names and codes which connect to the airport coded LYT.
+
+Airport.find_by_sql("SELECT airports.long_name, airports.code FROM airports JOIN flights ON (flights.origin_id = airports.id) WHERE flights.destination_id = (SELECT airports.id FROM airports WHERE airports.code = 'LYT' )")
+
+Airport.find_by_sql("SELECT airports.long_name, airports.code FROM airports JOIN flights ON (flights.origin_id = airports.id) WHERE flights.destination_id = (SELECT airports.id FROM airports WHERE airports.code = 'GBC' )")
+
+6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
+
+Airport.find_by_sql("SELECT airports.long_name 
+FROM airports 
+JOIN flights ON (flights.origin_id = airports.id) 
+JOIN users ON (flights.) 
+JOIN tickets ON
+JOIN itineraries ON 
+WHERE .destination_id = (SELECT airports.id FROM airports WHERE airports.code = 'GBC' )")
