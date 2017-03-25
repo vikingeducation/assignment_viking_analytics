@@ -172,11 +172,48 @@ AND state_a.name != 'Florida'
 
 6. Return the range of lengths of flights in the system(the maximum, and the minimum).
 
-(unclear if it's in time or distance, but according to aviation dictionary length of flight is defined as distance)
+_(unclear if it's in time or distance, but according to aviation dictionary length of flight is defined as distance)_
 
 ```
 Airport.find_by_sql("
 SELECT MAX(flights.distance), MIN(flights.distance) FROM flights
 ")
 ```
+
+
+
+
+# Queries 3: Advanced
+
+1. Find the most popular travel destination for users who live in Kansas.
+```
+Airport.find_by_sql("
+SELECT cities.name, COUNT(*) as sum FROM cities
+JOIN flights ON (flights.destination_id = cities.id)
+JOIN tickets ON (flights.id = tickets.id)
+JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
+JOIN users ON (itineraries.user_id = users.id)
+JOIN airports ON (flights.destination_id = airports.id)
+JOIN states ON (states.id = users.state_id)
+WHERE users.state_id = (
+SELECT states.id FROM states
+WHERE states.name = 'Kansas')
+GROUP BY cities.name
+ORDER BY sum DESC
+LIMIT 2
+")
+```
+
+
+2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+
+
+
+
+
+
+
+3. Find the cheapest flight that was taken by a user who only had one itinerary.
+4. Find the average cost of a flight itinerary for users in each state in 2012.
+5. Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
 
