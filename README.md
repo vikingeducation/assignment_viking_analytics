@@ -1,7 +1,7 @@
 Dariusz Biskupski
 # assignmnent_viking_analytics
 
-#Queries 1: Warmups
+# Queries 1: Warmups
 
 1. Get a list of all users in California
 ```
@@ -63,5 +63,120 @@ JOIN users ON (itineraries.user_id = users.id)
 WHERE users.first_name IN ('Agnes')
 AND users.last_name IN ('D''Amore')
 AND flights.updated_at > '2012-01-01'")
+```
+
+
+
+
+
+# Queries 2: Adding in Aggregation
+
+1. Find the top 5 most expensive flights that end in California.
+```
+Airport.find_by_sql("
+SELECT airlines.name, flights.id, flights.price FROM flights 
+JOIN airports ON (flights.destination_id = airports.id)
+JOIN airlines ON (flights.airline_id = airlines.id)
+JOIN states ON (states.id = airports.state_id)
+WHERE states.name='California'
+ORDER BY flights.price DESC
+LIMIT 5
+")
+```
+
+2. Find the shortest flight that username "ryann_anderson" took.
+```
+Airport.find_by_sql("
+SELECT * FROM flights 
+JOIN tickets ON (flights.id = tickets.id)
+JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
+JOIN users ON (itineraries.user_id = users.id)
+WHERE users.username IN ('leopold')
+AND flights.distance = (
+SELECT MIN(flights.distance) FROM flights
+JOIN tickets ON (flights.id = tickets.id)
+JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
+JOIN users ON (itineraries.user_id = users.id)
+WHERE users.username IN ('ryann_anderson'))
+")
+```
+
+_or user from my seeds_
+
+```
+Airport.find_by_sql("
+SELECT * FROM flights 
+JOIN tickets ON (flights.id = tickets.id)
+JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
+JOIN users ON (itineraries.user_id = users.id)
+WHERE users.username IN ('leopold')
+AND flights.distance = (
+SELECT MIN(flights.distance) FROM flights
+JOIN tickets ON (flights.id = tickets.id)
+JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
+JOIN users ON (itineraries.user_id = users.id)
+WHERE users.username IN ('leopold'))
+")
+```
+
+
+3. Find the average flight distance for flights entering or leaving each city in Florida
+
+```
+Airport.find_by_sql("
+SELECT AVG(flights.distance) FROM flights
+JOIN airports airp_a ON (flights.destination_id = airp_a.id)
+JOIN states state_a ON (state_a.id = airp_a.state_id)
+JOIN airports airp_b ON (flights.origin_id = airp_b.id)
+JOIN states state_b ON (state_b.id = airp_b.state_id)
+WHERE state_a.name = 'Florida'
+OR state_b.name = 'Florida'
+")
+```
+
+
+4. Find the 3 users who spent the most money on flights in 2013
+
+```
+Airport.find_by_sql("
+SELECT users.*, SUM(flights.price) total FROM users
+JOIN itineraries ON (users.id = itineraries.user_id)
+JOIN tickets ON (itineraries.id = tickets.itinerary_id)
+JOIN flights ON (tickets.flight_id = flights.id)
+WHERE flights.updated_at >= '2016-06-01' 
+AND flights.updated_at <= '2017-05-31'
+GROUP BY users.id
+ORDER BY total DESC
+LIMIT 3
+")
+```
+
+5. Count all flights to or from the city of Lake Vivienne that did not land in Florida
+
+```
+Airport.find_by_sql("
+SELECT COUNT(*) FROM flights
+JOIN airports airp_a ON (flights.destination_id = airp_a.id)
+JOIN cities city_a ON (city_a.id = airp_a.city_id)
+JOIN states state_a ON (state_a.id = airp_a.state_id)
+JOIN airports airp_b ON (flights.origin_id = airp_b.id)
+JOIN cities city_b ON (city_b.id = airp_b.city_id)
+JOIN states state_b ON (state_b.id = airp_b.state_id)
+WHERE city_a.name = 'Lake Vivienne'
+OR city_b.name = 'Lake Vivienne'
+AND state_a.name != 'Florida'
+")
+```
+
+
+
+6. Return the range of lengths of flights in the system(the maximum, and the minimum).
+
+(unclear if it's in time or distance, but according to aviation dictionary length of flight is defined as distance)
+
+```
+Airport.find_by_sql("
+SELECT MAX(flights.distance), MIN(flights.distance) FROM flights
+")
 ```
 
