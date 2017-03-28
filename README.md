@@ -207,13 +207,77 @@ LIMIT 2
 
 2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
 
+How many flights have round trips possible? 
+THat means connetions with airports where there exists 
+a flight FROM that airport and a later flight TO that airport.
 
 
-
+```
+Flight.find_by_sql("
+SELECT COUNT(*) FROM flights x
+JOIN airports air_a ON air_a.id = x.origin_id
+JOIN airports air_b ON air_b.id = x.destination_id
+JOIN flights y ON air_b.id = y.origin_id
+JOIN airports air_c ON air_c.id = y.destination_id
+WHERE air_c.id = air_a.id
+")
+```
 
 
 
 3. Find the cheapest flight that was taken by a user who only had one itinerary.
+
+- find users who has only one itinerary
+- sort by price
+- Limit 1
+
+
+```
+User.find_by_sql("
+SELECT flights.* FROM flights
+JOIN tickets ON tickets.flight_id = flights.id
+JOIN itineraries ON tickets.id = itineraries.user_id
+JOIN users ON users.id = itineraries.user_id
+WHERE users.id IN (SELECT users.id FROM users
+JOIN itineraries ON users.id = itineraries.user_id
+JOIN tickets ON tickets.id = itineraries.user_id
+GROUP BY users.id
+HAVING COUNT(*) = 1)
+ORDER BY flights.price
+LIMIT 1
+")
+```
+
+
+
+
 4. Find the average cost of a flight itinerary for users in each state in 2012.
-5. Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
+
+- find flights with origins per each states
+- find AVG on price paid and group by state
+
+```
+User.find_by_sql("
+SELECT AVG(flights.price), states.name FROM flights
+JOIN tickets ON tickets.flight_id = flights.id
+JOIN itineraries ON tickets.id = itineraries.user_id
+JOIN users ON users.id = itineraries.user_id
+JOIN airports ON flights.origin_id = airports.id
+JOIN states ON states.id = airports.state_id
+WHERE flights.updated_at < '2017-03-26'
+GROUP BY states.name
+")
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
