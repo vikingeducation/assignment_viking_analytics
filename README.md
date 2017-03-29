@@ -8,6 +8,8 @@ Dariusz Biskupski
 User.find_by_sql("SELECT * FROM users JOIN states ON users.state_id = states.id WHERE name = 'California'")
 ```
 
+
+
 2. Get a list of all airports in Minnesota
 ```
 Airport.find_by_sql("SELECT * FROM airports JOIN states ON airports.state_id = states.id WHERE name = 'Minnesota'")
@@ -39,6 +41,8 @@ _or alternative to select from my seeded database_
 Airport.find_by_sql("SELECT airports.long_name, airports.code FROM airports JOIN flights ON (flights.origin_id = airports.id) WHERE flights.destination_id = (SELECT airports.id FROM airports WHERE airports.code = 'JUH' )")
 ```
 
+
+
 6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
 ```
 Airport.find_by_sql("
@@ -65,8 +69,17 @@ AND users.last_name IN ('D''Amore')
 AND flights.updated_at > '2012-01-01'")
 ```
 
-
-
+Airport.find_by_sql("
+SELECT airports.long_name AS airport, CONCAT(users.first_name, ' ', users.last_name) AS user FROM airports
+  JOIN flights origin ON airports.id = origin.origin_id
+  JOIN flights destination ON airports.id = destination.destination_id
+  JOIN tickets ON origin.id = tickets.flight_id
+  JOIN itineraries ON itineraries.id = tickets.itinerary_id
+  JOIN users ON users.id = itineraries.user_id
+  WHERE users.first_name = 'Dannie'
+    AND users.last_name = 'D''Amore'
+    AND origin.departure_time > '2012-1-1'
+")
 
 
 # Queries 2: Adding in Aggregation
@@ -188,19 +201,17 @@ SELECT MAX(flights.distance), MIN(flights.distance) FROM flights
 1. Find the most popular travel destination for users who live in Kansas.
 ```
 Airport.find_by_sql("
-SELECT cities.name, COUNT(*) as sum FROM cities
-JOIN flights ON (flights.destination_id = cities.id)
-JOIN tickets ON (flights.id = tickets.id)
-JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
-JOIN users ON (itineraries.user_id = users.id)
+SELECT cities.name, COUNT(cities) as sum FROM users
+JOIN states ON (users.state_id = states.id)
+JOIN itineraries ON (users.id = itineraries.user_id)
+JOIN tickets ON (itineraries.id = tickets.itinerary_id)
+JOIN flights ON (tickets.flight_id =flights.id )
 JOIN airports ON (flights.destination_id = airports.id)
-JOIN states ON (states.id = users.state_id)
-WHERE users.state_id = (
-SELECT states.id FROM states
-WHERE states.name = 'Kansas')
+JOIN cities ON (airports.city_id = cities.id)
+WHERE states.name = 'Kansas'
 GROUP BY cities.name
-ORDER BY sum DESC
-LIMIT 2
+ORDER BY sum
+LIMIT 1
 ")
 ```
 
@@ -208,18 +219,15 @@ LIMIT 2
 2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
 
 How many flights have round trips possible? 
-THat means connetions with airports where there exists 
+THat means connections with airports where there exists 
 a flight FROM that airport and a later flight TO that airport.
 
 
 ```
 Flight.find_by_sql("
-SELECT COUNT(*) FROM flights x
-JOIN airports air_a ON air_a.id = x.origin_id
-JOIN airports air_b ON air_b.id = x.destination_id
-JOIN flights y ON air_b.id = y.origin_id
-JOIN airports air_c ON air_c.id = y.destination_id
-WHERE air_c.id = air_a.id
+SELECT COUNT(*) round_trips FROM flights x
+JOIN flights y ON x.origin_id = y.destination_id
+WHERE x.arrival_time < y.departure_time
 ")
 ```
 
@@ -235,49 +243,36 @@ WHERE air_c.id = air_a.id
 ```
 User.find_by_sql("
 SELECT flights.* FROM flights
-JOIN tickets ON tickets.flight_id = flights.id
-JOIN itineraries ON tickets.id = itineraries.user_id
-JOIN users ON users.id = itineraries.user_id
-WHERE users.id IN (SELECT users.id FROM users
-JOIN itineraries ON users.id = itineraries.user_id
-JOIN tickets ON tickets.id = itineraries.user_id
-GROUP BY users.id
-HAVING COUNT(*) = 1)
+WHERE flights.id = (
+SELECT flights.id FROM flights
+JOIN tickets ON flights.id = tickets.flight_id
+JOIN itineraries ON itineraries.id = tickets.itinerary_id
+GROUP BY flights.id
+HAVING COUNT(itineraries.user_id) = 1
 ORDER BY flights.price
 LIMIT 1
+)
 ")
-```
 
 
 
 
 4. Find the average cost of a flight itinerary for users in each state in 2012.
 
-- find flights with origins per each states
-- find AVG on price paid and group by state
 
 ```
 User.find_by_sql("
 SELECT AVG(flights.price), states.name FROM flights
 JOIN tickets ON tickets.flight_id = flights.id
-JOIN itineraries ON tickets.id = itineraries.user_id
+JOIN itineraries ON tickets.itinerary_id = itineraries.id
 JOIN users ON users.id = itineraries.user_id
-JOIN airports ON flights.origin_id = airports.id
-JOIN states ON states.id = airports.state_id
-WHERE flights.updated_at < '2017-03-26'
+JOIN states ON states.id = users.state_id
+WHERE flights.departure_time < '2012-12-31' 
+AND flights.departure_time > '2012-01-01' 
 GROUP BY states.name
+ORDER BY states.name
 ")
 ```
-
-
-
-
-
-
-
-
-
-
 
 
 
