@@ -79,7 +79,7 @@ GEM
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
-    pg (0.18.4)
+    pg (0.20.0)
     pkg-config (1.1.7)
     rack (2.0.1)
     rack-test (0.6.3)
