@@ -28,21 +28,20 @@ Queries 1: Warmups
     User.find_by_sql "SELECT origin_airport.long_name, flights.price FROM flights JOIN airports origin_airport ON origin_airport.id = flights.origin_id WHERE origin_airport.long_name = 'East Ara Probably International Airport'"
 
 5.  SELECT DISTINCT 
-        destination_airport.long_name AS 'airport connecting to LYT',
+        flights.origin_id, flights.destination_id, destination_airport.long_name AS airport_connecting_to_APV,
         destination_airport.code 
       FROM flights
       JOIN airports origin_airport
         ON origin_airport.id = flights.origin_id
       JOIN airports destination_airport
         ON destination_airport.id = flights.destination_id
-      WHERE origin_airport.code = 'LYT'
+      WHERE origin_airport.code = 'APV'
       ORDER BY destination_airport.long_name
         # strictly speaking not 100% accurate as this assunes 
         # there are always reciprocal flights between airports
         # which is alomost but not totally true
 
-    User.find_by_sql ""
-
+    User.find_by_sql "SELECT DISTINCT flights.origin_id, flights.destination_id, destination_airport.long_name AS airport_connecting_to_APV, destination_airport.code FROM flights JOIN airports origin_airport ON origin_airport.id = flights.origin_id JOIN airports destination_airport ON destination_airport.id = flights.destination_id WHERE origin_airport.code = 'APV' ORDER BY destination_airport.long_name"
 
 
 6.  SELECT DISTINCT airports.code, 
@@ -55,7 +54,7 @@ Queries 1: Warmups
       JOIN tickets
         ON itineraries.id = tickets.itinerary_id
       JOIN flights
-        ON flights.id = itineraries.flight_id
+        ON flights.id = tickets.flight_id
       JOIN airports
         ON airports.id = flights.origin_id
         OR airports.id = flights.destination_id
@@ -66,6 +65,11 @@ Queries 1: Warmups
       WHERE users.first_name = 'Dannie'
         AND users.last_name = 'D''Amore'
         AND flights.departure_time >= 2012 # the year portion
+
+
+
+User.find_by_sql "SELECT DISTINCT users.first_name, users.last_name, airports.code, airports.long_name, cities.name AS city, states.name AS state FROM users JOIN itineraries ON users.id = itineraries.user_id JOIN tickets ON itineraries.id = tickets.itinerary_id JOIN flights ON flights.id = tickets.flight_id JOIN airports ON airports.id = flights.origin_id OR airports.id = flights.destination_id JOIN cities ON cities.id = airports.city_id JOIN states ON states.id = airports.state_id WHERE users.first_name = 'Nikolas' AND users.last_name = 'O''Keefe'"
+
 
 
 
@@ -110,17 +114,22 @@ Queries 2: Aggregation
       ORDER BY flights.distance
       LIMIT 1
 
-3. SELECT AVG(flights.distance) AS "average flight distance to/from cities in Florida"
+3. SELECT states.name, AVG(flights.distance) 
+      AS average_flight_distance_between_cities_in_Florida 
     FROM flights
     JOIN airports
       ON airports.id = flights.origin_id
       OR airports.id = flights.destination_id
     JOIN states
       ON states.id = airports.state_id
-    WHERE states.name = 'Florida'
+    GROUP BY states.name 
+    HAVING states.name = 'Florida'
 
-4.  SELECT users.first_name
-           users.last_name
+User.find_by_sql "SELECT states.name, AVG(flights.distance) AS average_flight_distance_between_cities_in_Florida FROM flights JOIN airports ON airports.id = flights.origin_id OR airports.id = flights.destination_id JOIN states ON states.id = airports.state_id GROUP BY states.name HAVING states.name = 'Florida'"
+
+
+4.  SELECT users.first_name,
+           users.last_name,
            SUM(flights.price)
       FROM users
       JOIN itineraries
@@ -128,11 +137,33 @@ Queries 2: Aggregation
       JOIN tickets
         ON itineraries.id = tickets.itinerary_id
       JOIN flights
-        ON flights.id = itineraries.flight_id
-      WHERE itineraries.created_at = 2013 # year portion
+        ON flights.id = tickets.flight_id
+      HAVING date_trunc('year', itineraries.created_at) = 2013 # year portion
       GROUP BY users.last_name, users.first_name
       ORDER BY users.last_name, users.first_name
       LIMIT 3
+
+
+      # EXTRACT(year FROM "date") = 2011
+      # date_trunc('day', created_at)
+      # From Posrgres Guide: Working with Dates and Times
+
+User.find_by_sql "SELECT users.first_name,
+           users.last_name,
+           SUM(flights.price)
+      FROM users
+      JOIN itineraries
+        ON users.id = itineraries.user_id
+      JOIN tickets
+        ON itineraries.id = tickets.itinerary_id
+      JOIN flights
+        ON flights.id = tickets.flight_id
+      HAVING date_trunc('year', itineraries.created_at) = 2013
+      GROUP BY users.last_name, users.first_name
+      ORDER BY users.last_name, users.first_name
+      LIMIT 3"
+
+
 
 5.  SELECT COUNT(*)              # test with SELECT *
       FROM flights
