@@ -6,6 +6,8 @@ gem 'rails', '5.0.0.1'
 # Use postgresql as the database for Active Record
 gem 'pg'
 
+gem 'activesupport', '~> 5.0', '>= 5.0.0.1'
+
 gem 'hirb'
 
 gem 'faker'
@@ -41,4 +43,6 @@ gem 'spring',        group: :development
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+
+
 
