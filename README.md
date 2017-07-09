@@ -128,3 +128,117 @@ OR flights.origin_id != florida_airports.id AND flights.destination_id = lake_vi
 SELECT MIN(distance), MAX(distance), AVG(distance)
 FROM flights
 ```
+
+## Queries 3: Advanced
+
+1. Find the most popular travel destination for users who live in Kansas.
+```
+WITH dest_airports AS (
+	SELECT destination_id
+	FROM users
+	JOIN states ON users.state_id = states.id
+	JOIN itineraries ON users.id = itineraries.user_id
+	JOIN tickets ON itineraries.id = tickets.itinerary_id
+	JOIN flights ON flights.id = tickets.flight_id
+	WHERE states.name = 'Kansas'
+), dest_cities AS (
+	SELECT city_id
+	FROM airports, dest_airports
+	WHERE dest_airports.destination_id = airports.id
+)
+SELECT cities.name, COUNT(cities.name)
+FROM cities, dest_cities
+WHERE cities.id = dest_cities.city_id
+GROUP BY cities.name
+ORDER BY COUNT(cities.name) DESC
+```
+2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+```
+SELECT COUNT(*)
+FROM flights A
+JOIN flights B
+ON A.origin_id = B.destination_id
+AND A.destination_id = B.origin_id
+AND B.destination_id = A.origin_id
+AND A.arrival_time < B.departure_time
+```
+3. Find the cheapest flight that was taken by a user who only had one itinerary.
+```
+WITH desired_users AS (
+	SELECT user_id
+	FROM itineraries
+	GROUP BY user_id
+	HAVING COUNT(user_id) = 1
+)
+SELECT first_name, last_name, origin.name, destination.name, departure_time, arrival_time, price
+FROM tickets
+JOIN itineraries ON tickets.itinerary_id = itineraries.id
+JOIN flights ON tickets.flight_id = flights.id
+JOIN users ON itineraries.user_id = users.id
+JOIN desired_users ON users.id = desired_users.user_id
+JOIN cities origin ON flights.origin_id = origin.id
+JOIN cities destination ON flights.destination_id = destination.id
+ORDER BY price ASC
+LIMIT 1
+```
+4. Find the average cost of a flight itinerary for users in each state in 2012.
+```
+SELECT states.name, AVG(flights.price)
+FROM itineraries
+JOIN users ON itineraries.user_id = users.id
+JOIN tickets ON tickets.itinerary_id = itineraries.id
+JOIN flights ON tickets.flight_id = flights.id
+JOIN states ON users.state_id = states.id
+WHERE flights.departure_time BETWEEN '2012-01-01' AND '2012-12-31'
+AND flights.arrival_time BETWEEN '2012-01-01' AND '2012-12-31'
+GROUP BY states.name
+```
+5. Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
+```
+WITH oregon_to_pennsylvania AS (
+	SELECT *
+	FROM flights
+	WHERE origin_id IN (
+		-- find airports in Oregon
+		SELECT airports.id
+		FROM airports
+		JOIN states ON airports.state_id = states.id
+		WHERE states.name = 'Oregon'
+	)
+	AND destination_id IN (
+		-- find airports in Pennsylvania
+		SELECT airports.id
+		FROM airports
+		JOIN states ON airports.state_id = states.id
+		WHERE states.name = 'Pennsylvania'
+	)
+	AND distance <= 400
+	AND departure_time >= (timestamp '2013-05-06' + interval '42 days')
+),
+pennsylvania_to_arkansas AS (
+	SELECT *
+	FROM flights
+	WHERE origin_id IN (
+		-- find airports in Pennsylvania
+		SELECT airports.id
+		FROM airports
+		JOIN states ON airports.state_id = states.id
+		WHERE states.name = 'Pennsylvania'
+	)
+	AND destination_id IN (
+		-- find airports in Arkansas
+		SELECT airports.id
+		FROM airports
+		JOIN states ON airports.state_id = states.id
+		WHERE states.name = 'Arkansas'
+	)
+	AND distance <= 400
+	AND arrival_time <= (timestamp '2013-05-06' + interval '42 days')
+)
+SELECT
+oregon_to_pennsylvania.origin_id, oregon_to_pennsylvania.destination_id, oregon_to_pennsylvania.departure_time, oregon_to_pennsylvania.arrival_time, oregon_to_pennsylvania.price, oregon_to_pennsylvania.distance,
+pennsylvania_to_arkansas.origin_id, pennsylvania_to_arkansas.destination_id, pennsylvania_to_arkansas.departure_time, pennsylvania_to_arkansas.arrival_time, pennsylvania_to_arkansas.price, pennsylvania_to_arkansas.distance
+FROM oregon_to_pennsylvania
+JOIN pennsylvania_to_arkansas
+ON oregon_to_pennsylvania.destination_id = pennsylvania_to_arkansas.origin_id
+```
