@@ -84,7 +84,58 @@ and flights.destination_id not in (
 
 # Advanced
  -- Find the most popular travel destination for users who live in Kansas.
+SELECT COUNT(*), flights.id from cities
+JOIN airports on airports.city_id = cities.id
+JOIN flights on flights.destination_id = airports.id
+JOIN tickets on tickets.flight_id = flights.id
+JOIN itineraries AS it on it.id = tickets.itinerary_id
+JOIN users on users.id = it.user_id
+JOIN states on states.id = users.state_id
+WHERE states.name = 'Kansas'
+ORDER BY 1 desc
+GROUP BY flights.id;
+
  -- How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+SELECT f1.origin_id, f1.destination_id, f2.origin_id, f2.destination_id from flights f1
+JOIN flights f2 on f1.origin_id = f2.destination_id
+WHERE f1.destination_id = f2.origin_id and
+f1.departure_time < f2.arrival_time;
+
+
  -- Find the cheapest flight that was taken by a user who only had one itinerary.
+SELECT COUNT(*), it.user_id, MIN(price) from itineraries it
+join tickets on tickets.itinerary_id = it.user_id
+join flights on flights.id = tickets.itinerary_id
+GROUP BY user_id
+HAVING COUNT(*) = 1
+ORDER BY 3 ASC
+LIMIT 1;
+
  -- Find the average cost of a flight itinerary for users in each state in 2012.
- -- Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
+SELECT AVG(price), states.name FROM flights
+JOIN tickets on tickets.flight_id = flights.id
+JOIN itineraries it on it.id = tickets.itinerary_id
+JOIN users on users.id = it.user_id
+JOIN states on states.id = users.state_id
+WHERE SUBSTRING(CAST(flights.departure_time AS VARCHAR), 1, 4) = '2012'
+GROUP BY states.name;
+
+
+ -- Bonus: You're a tourist. It's May 6, 2013. Book the ch eapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
+ --Attempt but correction probably required
+ SELECT f1.origin_id, f1.destination_id, f2.origin_id, f2.destination_id, MIN(f1.price), MIN(f2.price) from flights f1
+ JOIN airports a1 on a1.id = f1.origin_id
+ JOIN states s1 on s1.id = a1.state_id
+ JOIN airports a2 on a2.id = f1.destination_id
+ JOIN states s2 on s2.id = a2.state_id
+ JOIN flights f2 on f1.destination_id = f2.origin_id
+ JOIN airports a3 on a3.id = f2.origin_id
+ JOIN states s3 on s3.id = a3.state_id
+ WHERE f1.distance < 400 
+ AND f1.departure_time > '2013-05-06'
+ AND f2.departure_time > f1.arrival_time
+ AND s1.name = 'Oregon'
+ AND s2.name = 'Pennsylvania'
+ AND s3.name = 'Arkansas'
+ AND f2.distance < 400
+ GROUP BY f1.origin_id, f1.destination_id, f2.origin_id, f2.destination_id;
