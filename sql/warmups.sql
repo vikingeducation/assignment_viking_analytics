@@ -10,7 +10,7 @@ SELECT airports.long_name AS airport, cities.name AS city FROM airports
   WHERE cities.name = 'Kadeton'
 ;
 
--- 3. Get a list of all payment methods used on itineraries by the user with email address "heidenreich_kara@kunde.net"
+-- 3. Get a list of all payment methods used on itineraries by the user with email address 'senger.krystel@marvin.io'
 SELECT users.email AS user_email, itineraries.payment_method AS payment_method FROM itineraries
   JOIN users ON users.id = itineraries.user_id
   WHERE users.email = 'senger.krystel@marvin.io'
@@ -29,7 +29,7 @@ SELECT origin.long_name AS origin, origin.code AS origin_code, destination.code 
   WHERE destination.code = 'LYT'
 ;
 
--- 6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first).
+-- 6. Get a list of all airports visited by user Krystel Senger after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first).
 SELECT airports.long_name AS airport, CONCAT(users.first_name, ' ', users.last_name) AS user FROM airports
   JOIN flights origin ON airports.id = origin.origin_id
   JOIN flights destination ON airports.id = destination.destination_id

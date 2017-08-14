@@ -1,4 +1,4 @@
--- 1. Find the most popular travel destination for users who live in Kansas.
+-- 1. Find the most popular travel destination for users who live in California.
 SELECT
   destination_city.name AS city,
   COUNT(destination_city) AS count

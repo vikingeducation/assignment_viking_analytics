@@ -7,7 +7,7 @@ SELECT CONCAT(origin.long_name, ' -> ', destination.long_name) AS flight, flight
   ORDER BY price DESC
 ;
 
--- 2. Find the shortest flight that username "ryann_anderson" took.
+-- 2. Find the shortest flight that username "zora_johnson" took.
 SELECT
   users.username AS username,
   CONCAT(origin.long_name, ' -> ', destination.long_name) AS flight,
@@ -22,7 +22,7 @@ SELECT
   GROUP BY username, flight
 ;
 
--- 3. Find the average flight distance for every city in Florida
+-- 3. Find the average flight distance for every city in California
 SELECT destination_state.name AS state, cities.name AS city, AVG(flights.distance) AS average_distance FROM flights
   JOIN airports origin ON origin.id = flights.origin_id
   JOIN airports destination ON destination.id = flights.destination_id
@@ -44,7 +44,7 @@ SELECT users.username, SUM(flights.price) AS total_money FROM flights
   LIMIT 3
 ;
 
--- 5. Count all flights to OR from the city of Lake Vivienne that did not land in Florida
+-- 5. Count all flights to OR from the city of Smithshire that did not land in Delaware
 SELECT
   destination_state.name,
   origin_city.name,
