@@ -58,10 +58,7 @@ Queries 1: Warmups
                                                                              WHERE user_id = (SELECT id
                                                                                                   FROM users
                                                                                                 WHERE first_name LIKE 'Dannie' AND last_name LIKE 'D''Amore)))))
-
-
-
-        OR id IN (SELECT origin_id
+      OR id IN (SELECT origin_id
                       FROM flights
                     WHERE id IN (SELECT id as flight_id
                                      FROM flights
