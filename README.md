@@ -1,5 +1,19 @@
-Dariusz Biskupski
-# assignmnent_viking_analytics
+# SQL queries to Viking Flight Booker postgreSQL database
+
+
+The following queries are to be run in Rails Console. By using Model.find_by_sql method, you run SQL queries on a postgreSQL database provided by [Viking Code School](https://www.vikingcodeschool.com/). There is no front-end attached to this rails app.
+
+Below are the SQL code representation of answers
+
+
+## Getting Started
+
+If you want to quick run some the examples to see the code in action, and you have installed Ruby and Rails, run
+```
+$ bundle install
+$ rails console
+```
+
 
 # Queries 1: Warmups
 
@@ -46,8 +60,8 @@ Airport.find_by_sql("SELECT airports.long_name, airports.code FROM airports JOIN
 6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
 ```
 Airport.find_by_sql("
-SELECT airports.long_name 
-FROM airports JOIN flights ON (flights.origin_id = airports.id) 
+SELECT airports.long_name
+FROM airports JOIN flights ON (flights.origin_id = airports.id)
 JOIN tickets ON (flights.id = tickets.id)
 JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
 JOIN users ON (itineraries.user_id = users.id)
@@ -60,7 +74,7 @@ _or with my data:_
 ```
 Airport.find_by_sql("
 SELECT airports.long_name, flights.updated_at
-FROM airports JOIN flights ON (flights.origin_id = airports.id) 
+FROM airports JOIN flights ON (flights.origin_id = airports.id)
 JOIN tickets ON (flights.id = tickets.id)
 JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
 JOIN users ON (itineraries.user_id = users.id)
@@ -87,7 +101,7 @@ SELECT airports.long_name AS airport, CONCAT(users.first_name, ' ', users.last_n
 1. Find the top 5 most expensive flights that end in California.
 ```
 Airport.find_by_sql("
-SELECT airlines.name, flights.id, flights.price FROM flights 
+SELECT airlines.name, flights.id, flights.price FROM flights
 JOIN airports ON (flights.destination_id = airports.id)
 JOIN airlines ON (flights.airline_id = airlines.id)
 JOIN states ON (states.id = airports.state_id)
@@ -100,7 +114,7 @@ LIMIT 5
 2. Find the shortest flight that username "ryann_anderson" took.
 ```
 Airport.find_by_sql("
-SELECT * FROM flights 
+SELECT * FROM flights
 JOIN tickets ON (flights.id = tickets.id)
 JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
 JOIN users ON (itineraries.user_id = users.id)
@@ -118,7 +132,7 @@ _or user from my seeds_
 
 ```
 Airport.find_by_sql("
-SELECT * FROM flights 
+SELECT * FROM flights
 JOIN tickets ON (flights.id = tickets.id)
 JOIN itineraries ON (itineraries.id = tickets.itinerary_id)
 JOIN users ON (itineraries.user_id = users.id)
@@ -156,7 +170,7 @@ SELECT users.*, SUM(flights.price) total FROM users
 JOIN itineraries ON (users.id = itineraries.user_id)
 JOIN tickets ON (itineraries.id = tickets.itinerary_id)
 JOIN flights ON (tickets.flight_id = flights.id)
-WHERE flights.updated_at >= '2016-06-01' 
+WHERE flights.updated_at >= '2016-06-01'
 AND flights.updated_at <= '2017-05-31'
 GROUP BY users.id
 ORDER BY total DESC
@@ -218,8 +232,8 @@ LIMIT 1
 
 2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
 
-How many flights have round trips possible? 
-THat means connections with airports where there exists 
+How many flights have round trips possible?
+THat means connections with airports where there exists
 a flight FROM that airport and a later flight TO that airport.
 
 
@@ -267,8 +281,8 @@ JOIN tickets ON tickets.flight_id = flights.id
 JOIN itineraries ON tickets.itinerary_id = itineraries.id
 JOIN users ON users.id = itineraries.user_id
 JOIN states ON states.id = users.state_id
-WHERE flights.departure_time < '2012-12-31' 
-AND flights.departure_time > '2012-01-01' 
+WHERE flights.departure_time < '2012-12-31'
+AND flights.departure_time > '2012-01-01'
 GROUP BY states.name
 ORDER BY states.name
 ")
@@ -276,3 +290,11 @@ ORDER BY states.name
 
 
 
+## Authors
+
+* **Dariusz Biskupski** - *Initial work* - https://dariuszbiskupski.com
+
+
+## Acknowledgments
+
+This assignment I created for [Viking Code School](https://www.vikingcodeschool.com/)
