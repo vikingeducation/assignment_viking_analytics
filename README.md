@@ -48,12 +48,12 @@ QUERIES 3: ADVANCED
 *1.Find the most popular travel destination for users who live in Kansas.*
 Flight.find_by_sql "SELECT destination_id = FROM flights JOIN tickets on flights.id = tickets.flight_id JOIN itineraries ON itineraries.id = tickets.itinerary_id JOIN users on users.id = itineraries.user_id JOIN states ON users.state_id = states.id JOIN airports on destination.id = WHERE states.name = 'South Dakota'"
 
-2.How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
-Flight.find_by_sql "SELECT "
+*2.How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.*
+Flight.find_by_sql "SELECT a.origin_id as outbound, a.destination_id as inbound, b.origin_id as return_outbound, b.destination_id as return_inbound from flights a JOIN flights b ON a.origin_id = b.destination_id AND a.destination_id = b.origin_id WHERE a.arrival_time < b.departure_time"
 
 
 *3.Find the cheapest flight that was taken by a user who only had one itinerary.*
-?
+Flight.find_by_sql "SELECT min(a.price), origin.long_name, destination.long_name  from flights a JOIN flights b on a.id = b.id JOIN tickets on a.id = tickets.flight_id JOIN itineraries ON itineraries.id = tickets.itinerary_id JOIN users ON itineraries.user_id = users.id JOIN airports origin ON a.origin_id = origin.id JOIN airports destination on destination.id = b.origin_id group by origin.long_name, destination.long_name"
 
 *4.Find the average cost of a flight itinerary for users in each state in 2012.*
 Flight.find_by_sql "SELECT avg(price), states.name from flights JOIN tickets ON flights.id = tickets.flight_id JOIN itineraries ON itineraries.id = tickets.itinerary_id JOIN users ON itineraries.user_id = users.id JOIN states ON states.id = users.state_id GROUP BY states.name"
