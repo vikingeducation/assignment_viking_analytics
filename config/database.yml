@@ -20,10 +20,14 @@ default: &default
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: 5
+  username: skel
+  password: <%= ENV['ASSIGNMENT_VIKING_AIRLINES_DATABASE_PASSWORD'] %>
 
 development:
   <<: *default
   database: assignment_viking_airlines_development
+  username: skel
+  password: <%= ENV['ASSIGNMENT_VIKING_AIRLINES_DATABASE_PASSWORD'] %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -58,7 +62,8 @@ development:
 test:
   <<: *default
   database: assignment_viking_airlines_test
-
+  username: skel
+  password: <%= ENV['ASSIGNMENT_VIKING_AIRLINES_DATABASE_PASSWORD'] %>
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.
@@ -81,5 +86,5 @@ test:
 production:
   <<: *default
   database: assignment_viking_airlines_production
-  username: assignment_viking_airlines
+  username: skel
   password: <%= ENV['ASSIGNMENT_VIKING_AIRLINES_DATABASE_PASSWORD'] %>
