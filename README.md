@@ -12,6 +12,7 @@ SELECT *
 FROM users u JOIN states s ON s.id = u.state_id
 WHERE s.name = 'Nebraska';
 ```
+
 2. Get a list of all airports in Minnesota
 ```
 SELECT *
@@ -19,6 +20,7 @@ FROM airports a
   JOIN states s ON a.state_id = s.id
 WHERE s.name LIKE 'Minnesota';
 ```
+
 3. Get a list of all payment methods used on itineraries by the user with email address "heidenreich_kara@kunde.net"
 ```
 SELECT DISTINCT payment_method
@@ -26,6 +28,7 @@ FROM users u
   JOIN itineraries i ON u.id = i.user_id
 WHERE u.email = 'lueilwitz.caesar@leffler.name';
 ```
+
 4. Get a list of prices of all flights whose origins are in Kochfurt Probably International Airport.
 ```
 SELECT f.price
@@ -33,6 +36,7 @@ FROM flights f
   JOIN airports a ON f.origin_id = a.id
 WHERE a.long_name LIKE 'Hiramfort Probably International Airport';
 ```
+
 5. Find a list of all Airport names and codes which connect to the airport coded LYT.
 ```
 SELECT DISTINCT CONCAT(a.long_name, ' (', a.code, ')') AS "XRK Connections"
@@ -44,6 +48,7 @@ WHERE fo.destination_id = (
  OR fd.origin_id = (
   SELECT id from airports WHERE code = 'XRK');
 ```
+
 6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first).
 ```
 WIP --
@@ -70,6 +75,7 @@ WHERE s.name = 'Nebraska'
 ORDER BY f.price DESC
 LIMIT 5;
 ```
+
 2. Find the shortest flight that username "gaetano_moore" took.
 ```
 SELECT al.name, (f.arrival_time - f.departure_time) AS time
@@ -83,7 +89,9 @@ WHERE u.username = 'gaetano_moore'
 ORDER BY time ASC
 LIMIT 1;
 ```
+
 3. Find the average flight distance for flights entering or leaving each city in Florida
+```
 SELECT ROUND(AVG(f.distance)) AS avg_flight_distance
 FROM flights f
   JOIN airports ao ON ao.id = f.origin_id
@@ -91,6 +99,7 @@ FROM flights f
   JOIN airports ad ON ad.id = f.destination_id
   JOIN states sd ON sd.id = ad.state_id
 WHERE so.name = 'Florida' OR sd.name = 'Florida';
+```
 
 4. Find the 3 users who spent the most money on flights in 2013
 ```
@@ -104,6 +113,7 @@ GROUP BY u.username
 ORDER BY SUM(f.price) DESC
 LIMIT 3;
 ```
+
 5. Count all flights to or from the city of Meggiemouth that did not land in Florida
 ```
 SELECT COUNT(*)
@@ -115,6 +125,7 @@ FROM flights f
   JOIN states s ON ad.state_id = s.id
 WHERE (co.name = 'Meggiemouth' OR cd.name = 'Meggiemouth') AND s.name != 'Florida';
 ```
+
 6. Return the range of lengths of flights in the system(the maximum, and the minimum).
 ```
 SELECT MAX(distance), MIN(distance)
@@ -135,6 +146,7 @@ GROUP BY c.name
 ORDER BY COUNT(f.*) DESC
 LIMIT 1;
 ```
+
 2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
 
 3. Find the cheapest flight that was taken by a user who only had one itinerary.
