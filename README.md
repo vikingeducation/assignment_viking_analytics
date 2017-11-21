@@ -37,9 +37,26 @@ WHERE a.long_name LIKE 'Hiramfort Probably International Airport';
 ```
 5. Find a list of all Airport names and codes which connect to the airport coded LYT.
 ```
+SELECT DISTINCT CONCAT(a.long_name, ' (', a.code, ')') AS "XRK Connections"
+FROM airports a
+  JOIN flights fo ON fo.origin_id = a.id
+  JOIN flights fd ON fd.destination_id = a.id
+WHERE fo.destination_id = (
+  SELECT id FROM airports WHERE code = 'XRK')
+ OR fd.origin_id = (
+  SELECT id from airports WHERE code = 'XRK');
 ```
 6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
 ```
+WIP --
+
+SELECT a.long_name
+FROM users u
+  JOIN itineraries i ON i.user_id = u.id
+  JOIN tickets t ON t.itinerary_id = i.id
+  JOIN flights f ON f.id = t.flight_id
+  JOIN airports a ON a.id = f.origin_id
+WHERE u.first_name = 'Marques' AND u.last_name = 'Keebler' AND f.departure_time > '2012-01-01';
 ```
 
 ## Queries 2: Adding in Aggregation
