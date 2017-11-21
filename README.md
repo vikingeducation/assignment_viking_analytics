@@ -4,12 +4,43 @@ Anne Richardson
 
 ## Queries 1: Warmups
 
+When working in `rails console`, wrap all queries in `ModelName.find_by_sql "your-query-here"`. Otherwise, if working directly in the postgres console, run all queries as shown below.
+
+Note: Many of the supplied query names were not present in my seeded data. For this reason, I used a modified data to yield some result from by database.
+
 1. Get a list of all users in California
+```
+SELECT *
+FROM users u JOIN states s ON s.id = u.state_id
+WHERE s.name = 'Nebraska';
+```
 2. Get a list of all airports in Minnesota
+```
+SELECT *
+FROM airports a
+  JOIN states s ON a.state_id = s.id
+WHERE s.name LIKE 'Minnesota';
+```
 3. Get a list of all payment methods used on itineraries by the user with email address "heidenreich_kara@kunde.net"
+```
+SELECT DISTINCT payment_method
+FROM users u
+  JOIN itineraries i ON u.id = i.user_id
+WHERE u.email = 'lueilwitz.caesar@leffler.name';
+```
 4. Get a list of prices of all flights whose origins are in Kochfurt Probably International Airport.
+```
+SELECT f.price
+FROM flights f
+  JOIN airports a ON f.origin_id = a.id
+WHERE a.long_name LIKE 'Hiramfort Probably International Airport';
+```
 5. Find a list of all Airport names and codes which connect to the airport coded LYT.
+```
+```
 6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
+```
+```
 
 ## Queries 2: Adding in Aggregation
 
