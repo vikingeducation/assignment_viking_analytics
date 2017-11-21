@@ -4,9 +4,7 @@ Anne Richardson
 
 ## Queries 1: Warmups
 
-When working in `rails console`, wrap all queries in `ModelName.find_by_sql "your-query-here"`. Otherwise, if working directly in the postgres console, run all queries as shown below.
-
-Note: Many of the supplied query names were not present in my seeded data. For this reason, I used a modified data to yield some result from by database.
+Many of the supplied query names were not present in my seeded data. For this reason, I used a modified data to yield some result from by database.
 
 1. Get a list of all users in California
 ```
@@ -46,7 +44,7 @@ WHERE fo.destination_id = (
  OR fd.origin_id = (
   SELECT id from airports WHERE code = 'XRK');
 ```
-6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first). Note: Careful how you escape the quote in "D'Amore"... escaping in SQL is different from Ruby.
+6. Get a list of all airports visited by user Dannie D'Amore after January 1, 2012. (Hint, see if you can get a list of all ticket IDs first).
 ```
 WIP --
 
@@ -61,17 +59,76 @@ WHERE u.first_name = 'Marques' AND u.last_name = 'Keebler' AND f.departure_time 
 
 ## Queries 2: Adding in Aggregation
 
-1. Find the top 5 most expensive flights that end in California.
-2. Find the shortest flight that username "ryann_anderson" took.
+1. Find the top 5 most expensive flights that end in Nebraska.
+```
+SELECT al.name, f.departure_time, f.price
+FROM flights f
+  JOIN airports a ON f.destination_id = a.id
+  JOIN states s ON a.state_id = s.id
+  JOIN airlines al ON f.airline_id = al.id
+WHERE s.name = 'Nebraska'
+ORDER BY f.price DESC
+LIMIT 5;
+```
+2. Find the shortest flight that username "gaetano_moore" took.
+```
+SELECT al.name, (f.arrival_time - f.departure_time) AS time
+FROM flights f
+  JOIN airports a ON f.destination_id = a.id
+  JOIN tickets t ON t.flight_id = f.id
+  JOIN itineraries i ON t.itinerary_id = i.id
+  JOIN users u ON i.user_id = u.id
+  JOIN airlines al ON f.airline_id = al.id
+WHERE u.username = 'gaetano_moore'
+ORDER BY time ASC
+LIMIT 1;
+```
 3. Find the average flight distance for flights entering or leaving each city in Florida
+SELECT ROUND(AVG(f.distance)) AS avg_flight_distance
+FROM flights f
+  JOIN airports ao ON ao.id = f.origin_id
+  JOIN states so ON so.id = ao.state_id
+  JOIN airports ad ON ad.id = f.destination_id
+  JOIN states sd ON sd.id = ad.state_id
+WHERE so.name = 'Florida' OR sd.name = 'Florida';
+
 4. Find the 3 users who spent the most money on flights in 2013
-5. Count all flights to or from the city of Lake Vivienne that did not land in Florida
+```
+SELECT u.username, SUM(f.price)
+FROM users u
+  JOIN itineraries i ON i.user_id = u.id
+  JOIN tickets t ON t.itinerary_id = i.id
+  JOIN flights f ON t.flight_id = f.id
+WHERE f.departure_time > '2012-01-01' AND f.departure_time < '2014-01-01'
+GROUP BY u.username
+ORDER BY SUM(f.price) DESC
+LIMIT 3;
+```
+5. Count all flights to or from the city of Meggiemouth that did not land in Florida
+```
+SELECT COUNT(*)
+FROM flights f
+  JOIN airports ao ON ao.id = f.origin_id
+  JOIN cities co ON ao.city_id = co.id
+  JOIN airports ad ON ad.id = f.destination_id
+  JOIN cities cd ON ad.city_id = cd.id
+  JOIN states s ON ad.state_id = s.id
+WHERE (co.name = 'Meggiemouth' OR cd.name = 'Meggiemouth') AND s.name != 'Florida';
+```
 6. Return the range of lengths of flights in the system(the maximum, and the minimum).
+```
+SELECT MAX(distance), MIN(distance)
+FROM flights;
+```
 
 ## Queries 3: Advanced
 
 1. Find the most popular travel destination for users who live in Kansas.
+
 2. How many flights have round trips possible? In other words, we want the count of all airports where there exists a flight FROM that airport and a later flight TO that airport.
+
 3. Find the cheapest flight that was taken by a user who only had one itinerary.
+
 4. Find the average cost of a flight itinerary for users in each state in 2012.
+
 5. Bonus: You're a tourist. It's May 6, 2013. Book the cheapest set of flights over the next six weeks that connect Oregon, Pennsylvania and Arkansas, but do not take any flights over 400 miles in distance. Note: This can be ~50 lines long but doesn't require any subqueries.
